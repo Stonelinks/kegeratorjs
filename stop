@@ -1,0 +1,10 @@
+#!/bin/bash
+ssh -i id_rsa root@192.168.1.5 /bin/bash << EOF
+if ps ax | grep -v grep | grep forever > /dev/null
+then
+  echo "forever is running, kill it"
+  killall node
+else
+  echo "forever is not running"
+fi
+EOF
