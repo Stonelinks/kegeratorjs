@@ -8,6 +8,7 @@ class Thermostat:
         self.onAddsHeat = onAddsHeat
         self.sense_DegC = 0
         self.relay = relay
+        self.outputSetting=False
 
     def run(self):
         try:
@@ -15,7 +16,7 @@ class Thermostat:
             if(self.sense_DegC > self.setpoint_DegC+self.deadBand_DegC):
                 #too warm
                 self.outputSetting = not self.onAddsHeat
-            elif(self.sense_DegC > self.setpoint_DegC-self.deadBand_DegC):
+            elif(self.sense_DegC < self.setpoint_DegC-self.deadBand_DegC):
                 #too cold
                 self.outputSetting = self.onAddsHeat
             self.relay(self.outputSetting)
