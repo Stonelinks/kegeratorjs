@@ -3,7 +3,8 @@ __author__ = 'nwiles'
 import ike
 
 def main():
-    ikeInstance = ike.ike()
+
+    ikeInstance = ike.Ike(relayPin=17, flow1Pin=27, flow2Pin=22)
     ikeInstance.run()
 
 if __name__ == "__main__":

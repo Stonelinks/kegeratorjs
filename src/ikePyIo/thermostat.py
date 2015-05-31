@@ -25,5 +25,5 @@ class Thermostat:
     def __str__(self):
         return "Thermostat: sense:{:2.1f} set:{:2.1f} delta:{:2.1f}degC {}".format(self.sense_DegC,
                                                                                    self.setpoint_DegC,
-                                                                                   self.setpoint_DegC-self.sense_DegC,
+                                                                                   self.sense_DegC-self.setpoint_DegC,
                                                                                    self.relay)
