@@ -14,8 +14,8 @@ app.addRegions({
 var Router = Marionette.AppRouter.extend({
 
   routes: {
-    '*catchall' : 'showGreeter',
-    // 'controls' : 'showControls'
+    'sensors' : 'showSensorData',
+    '*catchall' : 'showGreeter'
   },
 
   showGreeter: function() {
@@ -23,21 +23,27 @@ var Router = Marionette.AppRouter.extend({
     app.getRegion('content').show(new greeterView());
   },
 
-  showConsole: function() {
-    // var ConsoleView = require('./view/console');
-    // app.getRegion('content').show(new ConsoleView());
+  showSensorData: function() {
+    var SensorDataView = require('./view/sensordata');
+    
+    var SensorDataModel = Backbone.Model.extend({
+      url: function() {
+        return '/sensor_data'
+      }
+    });
+    
+    app.getRegion('content').show(new SensorDataView({
+      model: new SensorDataModel()
+    }));
   },
-
-  showControls: function() {
-    // var ControlsView = require('./view/controls');
-    // app.getRegion('content').show(new ControlsView());
-  }
 });
 
 // start the router
 app.addInitializer(function(opts) {
   this.router = new Router();
-  Backbone.history.start({pushState: true});
+  Backbone.history.start({
+    // pushState: true
+  });
 });
 
 app.start();
