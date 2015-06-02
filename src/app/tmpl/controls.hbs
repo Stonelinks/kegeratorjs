@@ -1,21 +1,20 @@
 <style>
-	.joystick {
-		//width: 460px;
-		//height: 230px;
-		display: inline-block;
-	}
+  .joystick {
+    //width: 460px;
+    //height: 230px;
+    display: inline-block;
+  }
 </style>
 <button id="fullscreen" style="border: none; background: none; position: absolute; right: 0; top: 0">
-	<span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
+  <span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span>
 </button>
 <div style="padding-top: 60px">
-	<div style="position: fixed; width: 100%; pointer-events:none;">
-		<div style="width: 210px; height: 210px; margin:auto;">
-			<canvas id="attitude" width="210" height="210"/>
-			<img src="/images/airware_logo.png" style="opacity: 0.2; margin-top: 10px"/>
-		</div>
-	</div>
-	<canvas id="joystick-left" class="joystick pull-left" width="210" height="210" />
-	<canvas id="joystick-right" class="joystick pull-right" width="210" height="210" />
+  <div style="position: fixed; width: 100%; pointer-events:none;">
+    <div style="width: 210px; height: 210px; margin:auto;">
+      <canvas id="attitude" width="210" height="210"/>
+      <img src="/images/airware_logo.png" style="opacity: 0.2; margin-top: 10px"/>
+    </div>
+  </div>
+  <canvas id="joystick-left" class="joystick pull-left" width="210" height="210" />
+  <canvas id="joystick-right" class="joystick pull-right" width="210" height="210" />
 </div>
-

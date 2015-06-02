@@ -6,10 +6,10 @@
 //** Background color for `<body>`.
 @body-bg:               #343741;
 //** Global text color on `<body>`.
-@text-color:            white;
+@text-color:            #ADADAD;
 
 @link-color:            white;
-@link-hover-color:     	@brand-primary;
+@link-hover-color:       @brand-primary;
 @link-hover-decoration: underline;
 
 @navbar-default-link-active-color: white;
@@ -21,70 +21,70 @@
 
 
 html, body {
-	background: #343741;
+  background: #343741;
 }
 
 
 #log {
-	height: 700px;
-	overflow: scroll;
-	tr {
-		height: auto;
-	}
+  height: 700px;
+  overflow: scroll;
+  tr {
+    height: auto;
+  }
 }
 
 .liveChart {
-	margin-bottom: 30px;
+  margin-bottom: 30px;
 } 
 
 .nav-tabs {
-	li {
-		a {
-			opacity: 0.8;
-			&:hover {
-				background: transparent;
-				border: none;
-				opacity: 1.0;
-			}
-		}		
-	}
+  li {
+    a {
+      opacity: 0.8;
+      &:hover {
+        background: transparent;
+        border: none;
+        opacity: 1.0;
+      }
+    }    
+  }
 
-	li.active {
-		a {
-			color: white;
-			font-weight: bold;
-			border: transparent;
-			border-bottom: 3px solid white;
+  li.active {
+    a {
+      color: white;
+      font-weight: bold;
+      border: transparent;
+      border-bottom: 3px solid white;
 
-			&:hover {
-				color: white;
-				font-weight: bold;
-				border: transparent;
-				border-bottom: 3px solid white;
-			}
-			&:focus {
-				color: white;
-				font-weight: bold;
-				border: transparent;
-				border-bottom: 3px solid white;
-			}
-		}
-	}
+      &:hover {
+        color: white;
+        font-weight: bold;
+        border: transparent;
+        border-bottom: 3px solid white;
+      }
+      &:focus {
+        color: white;
+        font-weight: bold;
+        border: transparent;
+        border-bottom: 3px solid white;
+      }
+    }
+  }
 }
 
 .btn-hollow {
-	.btn-default();
-	border-radius: 8px;
-	border: 2px white solid;
-	text-transform: uppercase;
-	color: white;
-	text-weight: bold;
-	background: transparent;
+  .btn-default();
+  border-radius: 8px;
+  border: 2px white solid;
+  text-transform: uppercase;
+  color: white;
+  text-weight: bold;
+  background: transparent;
 
-	&:hover {
-		color: white;
-		text-weight: bold;
-		background: @brand-primary;
-		border: 2px white solid;
-	}
+  &:hover {
+    color: white;
+    text-weight: bold;
+    background: @brand-primary;
+    border: 2px white solid;
+  }
 }

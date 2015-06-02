@@ -1,39 +1,43 @@
-var $	= require('jquery');
-var Backbone	= require('backbone');
+var $ = require('jquery');
+var Backbone = require('backbone');
 Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
 require('bootstrap');
-
 
 var app = new Marionette.Application();
 window.app = app;
 
 app.addRegions({
-	content: '#content'
+  content: '#content'
 });
 
 var Router = Marionette.AppRouter.extend({
 
-	routes: {
-		'console' : 'showConsole',
-		'controls' : 'showControls'
-	},
+  routes: {
+    '*catchall' : 'showGreeter',
+    // 'controls' : 'showControls'
+  },
 
-	showConsole: function() {
-		var ConsoleView = require('./view/console');
-		app.getRegion('content').show(new ConsoleView());
-	},
+  showGreeter: function() {
+    var greeterView = require('./view/hello');
+    app.getRegion('content').show(new greeterView());
+  },
 
-	showControls: function() {
-		var ControlsView = require('./view/controls');
-		app.getRegion('content').show(new ControlsView());
-	}
+  showConsole: function() {
+    // var ConsoleView = require('./view/console');
+    // app.getRegion('content').show(new ConsoleView());
+  },
+
+  showControls: function() {
+    // var ControlsView = require('./view/controls');
+    // app.getRegion('content').show(new ControlsView());
+  }
 });
 
 // start the router
 app.addInitializer(function(opts) {
-	this.router = new Router();
-	Backbone.history.start({pushState: true});
+  this.router = new Router();
+  Backbone.history.start({pushState: true});
 });
 
 app.start();
