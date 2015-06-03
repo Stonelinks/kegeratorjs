@@ -1,5 +1,5 @@
+
 #!/bin/bash
-npm i
-gulp build
-rsync -avz --rsh="ssh -i id_rsa" --exclude 'node_modules' --exclude '.git' . ssh -i id_rsa root@192.168.1.5:/root/kegeratorjs
-./restart
+source environment
+rsync -avz --rsh="ssh -i id_rsa" --exclude 'node_modules' --exclude '.git' . ssh -i id_rsa ${USER_NAME}@${IP_ADDR}:~/kegeratorjs
+#./restart

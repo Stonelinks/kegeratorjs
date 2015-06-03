@@ -1,0 +1,12 @@
+#!/bin/bash
+trap "exit;" SIGINT
+PROC_NAME="iked"
+LOG_FILE=~/.${PROC_NAME}.log
+
+while true; do
+	touch ${LOG_FILE}
+	echo "\n***Starting ${PROC_NAME}: $* ***" >> ${LOG_FILE}
+	$* >> ${LOG_FILE} 2>&1
+	echo "\n***${PROC_NAME} exited with code $?***" >> ${LOG_FILE}
+	sleep 1
+done

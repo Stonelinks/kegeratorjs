@@ -5,6 +5,7 @@ class Relay:
     def __init__(self, gpioPin):
         self.gpioPin = gpioPin
         RPIO.setup(self.gpioPin, RPIO.OUT)
+        self.relayOutput = False
 
     def __call__(self, on):
         self.relayOutput = on

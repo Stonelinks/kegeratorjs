@@ -1,4 +1,5 @@
 #!/bin/bash
-ssh -i id_rsa root@192.168.1.5 /bin/bash << EOF
-tail -f ~/.forever/kegerator.log
+source environment
+ssh -i id_rsa ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
+tail -f ~/.iked.log
 EOF

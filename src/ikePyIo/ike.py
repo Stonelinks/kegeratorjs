@@ -15,7 +15,8 @@ class Ike:
         self.flowMeters.append( SF800(flow2Pin) )
         self.tempSensor = W1ThermSensor()
         self.compressorRelay = Relay(relayPin)
-        self.thermostat = Thermostat(self.tempSensor.get_temperature, self.compressorRelay, onAddsHeat=0)
+        self.thermostat = Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0)
+        self.thermostat.start()
         #TODO: pressure and ADC
         #self.kegPressure =
         #self.tankPressure =
@@ -23,11 +24,10 @@ class Ike:
     def run(self):
         print("Welcome to IKE, version {}".format(self.version))
         while(1):
-            self.thermostat.run()
-            print(self.thermostat)
             for f in self.flowMeters:
                 print(f)
             sleep(1)
 
     def __del__(self):
+        self.thermostat.join()
         RPIO.cleanup()

@@ -1,4 +1,12 @@
 #!/bin/bash
-ssh -i id_rsa root@192.168.1.5 /bin/bash << EOF
-forever start --uid "kegerator" -a /root/kegeratorjs/src/server/index.js
+source environment
+ssh -i id_rsa ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
+
+if ps ax | grep -v grep | grep "/bin/bash /home/${USER_NAME}/kegeratorjs/iked sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/ikePyIo/ikePyIo.py" > /dev/null
+then
+    echo "iked is already running"
+else
+	echo "launched iked"
+	nohup /home/${USER_NAME}/kegeratorjs/iked sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/ikePyIo/ikePyIo.py > /dev/null 2>&1&
+fi
 EOF
