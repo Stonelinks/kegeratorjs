@@ -6529,6 +6529,12 @@ button.close {
     display: none !important;
   }
 }
+/*
+ * Background color for `<body>`.
+*/
+/*
+ * Global text color on `<body>`.
+*/
 html,
 body {
   background: #343741;
@@ -6625,4 +6631,7 @@ fieldset[disabled] .btn-hollow.active {
   text-weight: bold;
   background: #c02126;
   border: 2px white solid;
+}
+#nav img {
+  max-width: 400px;
 }

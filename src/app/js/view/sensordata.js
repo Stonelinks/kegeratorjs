@@ -3,17 +3,17 @@ var LiveChart = require('./liveChart');
 
 var SensorDataView = Marionette.ItemView.extend({
   template: require('../../tmpl/sensordata.hbs'),
-  
+
   initialize: function() {
     setInterval(function() {
       this.model.fetch();
-    }.bind(this), 500)
+    }.bind(this), 500);
   },
-  
+
   modelEvents: {
     'change': function() {
       if (this.thermostatChart) {
-        this.thermostatChart.addPoint(this.model.get('thermostat'))
+        this.thermostatChart.addPoint(this.model.get('thermostat'));
       }
     }
   },
@@ -24,8 +24,8 @@ var SensorDataView = Marionette.ItemView.extend({
     this.thermostatChart = new LiveChart({
       min: 0,
       max: 100.0
-    }).render()
-    this.$el.find("#kegerator-strips").append(this.thermostatChart.$el);
+    }).render();
+    this.$el.find('#kegerator-strips').append(this.thermostatChart.$el);
 
     // accel charts
     /*
@@ -72,7 +72,7 @@ var SensorDataView = Marionette.ItemView.extend({
     // var client = require('mqtt').connect();
     // client.subscribe('vehicle/sensor/+');
     // client.subscribe('vehicle/attitude');
-// 
+//
     // client.on('message', function(topic, payload) {
       // if (topic === "vehicle/sensor/gyro" && selectedStrip === 'gyro') {
         // var data = JSON.parse(payload.toString());

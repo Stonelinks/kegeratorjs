@@ -8,7 +8,7 @@ var ConsoleView = Marionette.ItemView.extend({
   template: require('../../tmpl/console.hbs'),
 
   onRender: function() {
-      $('#myTab a:last').tab('show')
+      $('#myTab a:last').tab('show');
 
     this.logView = new LogView();
     this.logView.render();
@@ -53,30 +53,30 @@ var ConsoleView = Marionette.ItemView.extend({
       x: new LiveChart(gyroChartOptions),
       y: new LiveChart(gyroChartOptions),
       z: new LiveChart(gyroChartOptions)
-    }
-    var width = this.$el.find('#chart-holder').width()-45;
+    };
+    var width = this.$el.find('#chart-holder').width() - 45;
     for (var axis in gyroCharts) {
       gyroCharts[axis].render();
-      gyroCharts[axis].setWidth(width-45);
-      this.$el.find("#gyro-strips").append(gyroCharts[axis].$el);
+      gyroCharts[axis].setWidth(width - 45);
+      this.$el.find('#gyro-strips').append(gyroCharts[axis].$el);
     }
 
     this.$el.on('shown.bs.tab', function() {
-      var width = this.$el.find('#chart-holder').width()-45;
-      console.log('showing with width of: %s', width);  
+      var width = this.$el.find('#chart-holder').width() - 45;
+      console.log('showing with width of: %s', width);
       for (var axis in gyroCharts) {
-        gyroCharts[axis].setWidth(width-45);
+        gyroCharts[axis].setWidth(width - 45);
       }
     }.bind(this));
     $(window).resize(function(e) {
-      var width = this.$el.find('#chart-holder').width()-45;
+      var width = this.$el.find('#chart-holder').width() - 45;
       for (var axis in gyroCharts) {
-        gyroCharts[axis].setWidth(width-45);
+        gyroCharts[axis].setWidth(width - 45);
       }
-    }.bind(this))
+    }.bind(this));
 
     var selectedStrip = 'gyro';
-    this.$el.find("#strip-selector").change(function(e) {
+    this.$el.find('#strip-selector').change(function(e) {
       selectedStrip = e.target.value.toLowerCase();
       for (var axis in gyroCharts) {
         gyroCharts[axis].clear();
@@ -129,7 +129,7 @@ var ConsoleView = Marionette.ItemView.extend({
     // var client = require('mqtt').connect();
     // client.subscribe('vehicle/sensor/+');
     // client.subscribe('vehicle/attitude');
-// 
+//
     // client.on('message', function(topic, payload) {
       // if (topic === "vehicle/sensor/gyro" && selectedStrip === 'gyro') {
         // var data = JSON.parse(payload.toString());

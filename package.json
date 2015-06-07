@@ -34,6 +34,7 @@
     "jquery": "2.1.4",
     "lodash": "3.9.3",
     "smoothie": "1.27.0",
-    "three": "0.69.0"
+    "three": "0.69.0",
+    "underscore": "^1.8.3"
   }
 }

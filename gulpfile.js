@@ -12,7 +12,7 @@ var gulp = require('gulp'),
   buffer = require('vinyl-buffer'),
   transform = require('vinyl-transform'),
   source = require('vinyl-source-stream'),
-  nodemon = require('gulp-nodemon')
+  nodemon = require('gulp-nodemon');
 
 var path = {
   tmpl: './src/app/tmpl/**/*.hbs',
@@ -21,7 +21,7 @@ var path = {
   images: './src/app/images/**/*.*',
   server: './src/server/**.js',
   index: './src/app/index.hbs'
-}
+};
 
 gulp.task('js', function() {
   var bundler = browserify({
@@ -32,7 +32,7 @@ gulp.task('js', function() {
   var bundle = function() {
     return bundler
       .bundle()
-      .pipe(source(package.name + "." + package.version + '.min.js'))
+      .pipe(source(package.name + '.' + package.version + '.min.js'))
       .pipe(buffer())
       .pipe(sourcemaps.init({loadMaps: true}))
       //.pipe(uglify())
@@ -50,7 +50,7 @@ gulp.task('images', function() {
 gulp.task('style', function() {
   return gulp.src(path.style)
     .pipe(less({
-        paths: [ './node_modules/bootstrap/less' ]
+        paths: ['./node_modules/bootstrap/less']
       }))
     .pipe(gulp.dest('./build/style'));
 });
@@ -58,14 +58,14 @@ gulp.task('style', function() {
 gulp.task('index', function() {
   return gulp.src(path.index)
     .pipe(tap(function(file, t) {
-    var template = handlebars.compile(file.contents.toString())
-    var html = template(package)
-    file.contents = new Buffer(html, "utf-8")
+    var template = handlebars.compile(file.contents.toString());
+    var html = template(package);
+    file.contents = new Buffer(html, 'utf-8');
     }))
     .pipe(rename(function(path) {
-    path.extname = ".html"
+    path.extname = '.html';
     }))
-    .pipe(gulp.dest("build/"))
+    .pipe(gulp.dest('build/'));
 });
 
 gulp.task('webserver', function() {
