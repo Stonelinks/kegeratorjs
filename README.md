@@ -1,9 +1,9 @@
 # kegeratorjs
-Javascript quad kegerator
+Javascript kegerator
 
 TODO: 
-```js
 
+```
   /**
    * Scales the value to a [-1, 1] range given the min/max/center
    */
@@ -35,104 +35,107 @@ TODO:
     }
 
     return scaled;
-  },
+  }
 
 ```
-MODELS
+##MODELS##
 
-kegerator model
-  beers [ array of beer Ids ]
-  kegs [ array of keg Ids ]
-  events [ array of event Ids ]
-  currentTemperature
-  averageTemperature
-  desiredTemperature (frontend to change this with a PUT)
-  currentKegPressure
-  averageKegPressure
-  currentTankPressure
-  averageTankPressure
+###kegerator model###
+  - beers [ array of beer Ids ]
+  - kegs [ array of keg Ids ]
+  - events [ array of event Ids ]
+  - currentTemperature
+  - averageTemperature
+  - desiredTemperature (frontend to change this with a PUT)
+  - currentKegPressure
+  - averageKegPressure
+  - currentTankPressure
+  - averageTankPressure
 
-beer model (from web.py)
-  id (PK)
-  name
-  description
-  picture (optional.. lets do this later)
-  brewedBy
-  style
-  ABV (optional)
-  rating (have a rateBeer(beerId, rating) endpoint in the API somewhere)
-  cost / brew (optional)
-  IBU (bitterness, optional)
-  SRM (color, optional)
+###beer model (from web.py)###
+  - id (PK)
+  - name
+  - description
+  - picture (optional.. lets do this later)
+  - brewedBy
+  - style
+  - ABV (optional)
+  - rating (have a rateBeer(beerId, rating) endpoint in the API somewhere)
+  - cost / brew (optional)
+  - IBU (bitterness, optional)
+  - SRM (color, optional)
 
-keg model (from web.py)
-  id (PK)... can just be index in 
-  beerId (maps to a beer model)
-  pintsConsumed
-  pintsTotal
+###keg model (from web.py)###
+  - id (PK)... can just be index in 
+  - beerId (maps to a beer model)
+  - pintsConsumed
+  - pintsTotal
   
-event model (from web.py)
-  id (PK)
-  timestamp
-  type
-    newKeg: new event on tap
-    pour: someone poured a beer
-    finishedKeg: a keg is dead
-    newUser: added a new user (coming in 1.0)
-    sensorSnapshot: current sensor state
-    settingsSnapshot: current kegerator settings
-  data (arbitrary json string useful for the particular event)
+###event model (from web.py)###
+  - id (PK)
+  - timestamp
+  - type
+    - newKeg: new event on tap
+    - pour: someone poured a beer
+    - finishedKeg: a keg is dead
+    - newUser: added a new user (coming in 1.0)
+    - sensorSnapshot: current sensor state
+    - settingsSnapshot: current kegerator settings
+  - data (arbitrary json string useful for the particular event)
   
-user model (not yet, coming in 1.0)
-  id
-  name
-  email
-  RFIDTag
-  NFCId
-  untapped account
+###user model (not yet, coming in 1.0)###
+  - id
+  - name
+  - email
+  - RFIDTag
+  - NFCId
+  - untapped account
 
-VIEWS
+##VIEWS##
 
-beer info
-  small display of pertinent beer info
-  have an "advanced" button, maybe pops up a modal?
+###beer info###
   
-beer list
-  just a list of beer info's for all beer in system
+  - small display of pertinent beer info
+  - have an "advanced" button, maybe pops up a modal?
+  
+###beer list###
 
-kegerator status widget
-  temperature and pressure indicators, gauges
-  temperature and pressure stripcharts
-  ability to add / remove an indicator, gauge or stripchart... store this in localstorage
-  list of keg status widgets per keg
+  - just a list of beer info's for all beer in system
 
-thermosthat stripchart
-  switch between average and actual
+###kegerator status widget###
+
+  - temperature and pressure indicators, gauges
+  - temperature and pressure stripcharts
+  - ability to add / remove an indicator, gauge or stripchart... store this in localstorage
+  - list of keg status widgets per keg
+
+###thermosthat stripchart###
+  - switch between average and actual
   shows desiredTemperature and currentTemperature are over time
   relay status (on or off)
 
-keg pressure stripchart
+###keg pressure stripchart###
   shows currentTankPressure over time
 
-keg consumption stripchart
+###keg consumption stripchart###
   shows plot of beer over time
 
-keg status widget
+###keg status widget###
   beer info for current beer
   progress bar of fullness?
 
-event log (history)
-  start date
-  end date
-  filteredType
-  list of event log entries
+###event log (history)###
+  - start date
+  - end date
+  - filteredType
+  - list of event log entries
   
-event log entry
-  will vary depending on type... a table row maybe?
+###event log entry###
+  - will vary depending on type... a table row maybe?
 
-ENDPOINTS
+##ENDPOINTS##
 
-////////////// kegerator
+###kegerator###
 
 GET /v1/kegerator
   return json serialzation of kegerator model
@@ -144,7 +147,7 @@ PUT /v1/kegerator
   parameters
     desiredTemperature
 
-////////////// beer
+###beer###
 
 GET /v1/beers
   return all beers in beer db
@@ -172,7 +175,7 @@ DELETE /v1/beers/<beerId>
   delete beer at <beerId>
   return empty json
 
-////////////// kegs
+###kegs###
 
 GET /v1/kegs
   return all kegs in keg db
@@ -198,7 +201,7 @@ DELETE /v1/kegs/<kegId>
   delete keg at <kegId>
   return empty json
 
-////////////// events
+###events###
 
 GET /events
   return
