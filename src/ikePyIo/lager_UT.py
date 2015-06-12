@@ -15,14 +15,14 @@ class TestLager(unittest.TestCase):
         log = lager.Lager(self.db_file)
         log.log_event(lager.Event.addKeg, {'id':1, 'beerId':5, 'litersConsumed':0.0, 'litersTotal':18.9271})
         log.log_event(lager.Event.pouredBeer, {'id':5, 'litersConsumed':0.5})
-        matches = log.find_events('now', None, lager.Event.addKeg)
+        matches = log.find_events(lager.Event.addKeg, 'now', None)
         self.assertEqual(len(matches), 1)
         self.assertEqual(matches[0]['id'], 0)
         self.assertEqual(matches[0]['data']['id'], 1)
         self.assertEqual(matches[0]['data']['beerId'], 5)
         self.assertEqual(matches[0]['data']['litersConsumed'], 0.0)
         self.assertEqual(matches[0]['data']['litersTotal'], 18.9271)
-        matches = log.find_events('now', None, None)
+        matches = log.find_events("", 'now', None)
         self.assertEqual(len(matches), 2)
 
     def test_searchHistory(self):
@@ -36,10 +36,11 @@ class TestLager(unittest.TestCase):
         log.log_event(lager.Event.pouredBeer, {'id':5, 'litersConsumed':0.3})
         log.log_event(lager.Event.pouredBeer, {'id':5, 'litersConsumed':0.2})
         log.log_event(lager.Event.pouredBeer, {'id':5, 'litersConsumed':0.1})
-        matches = log.find_events(time.time()-1, time.time(), lager.Event.pouredBeer)
+        matches = log.find_events(lager.Event.pouredBeer, time.time()-1, time.time())
+        log.find_events(None, None, None)
         self.assertEqual(len(matches), 5)
         time.sleep(1.0)
-        matches = log.find_events(time.time()-1, time.time(), lager.Event.pouredBeer)
+        matches = log.find_events(lager.Event.pouredBeer, time.time()-1, time.time())
         self.assertEqual(len(matches), 0)
 
 if __name__ == '__main__':

@@ -3,14 +3,13 @@ from tinydb import TinyDB, where
 import time
 from enum import Enum
 
-class Event(Enum):
-    addKeg=1 #new keg on tap
-    finishedKeg=2 #keg is finished
-    pouredBeer=3 #someone poured a beer
-    sensorSnapshot=4 #current sensor state
-    settingsSnapshot=5 #kegerator settings changed
-    newUser=6 # added a new user (coming in 1.0)
-
+class Event():
+    addKeg='addKeg' #new keg on tap
+    finishedKeg='finishedKeg' #keg is finished
+    pouredBeer='pouredBeer' #someone poured a beer
+    sensors='sensor' #current sensor state
+    settings='setting' #kegerator settings changed
+    newUser='newUser' # added a new user (coming in 1.0)
 
 class Lager:
     def __init__(self, event_log_path):
@@ -18,7 +17,8 @@ class Lager:
         self.event_db = TinyDB(event_log_path)
         #cache one of each of the last event types
         self.latestData = {}
-
+    def __del__(self):
+        self.event_db.close()
     #TODO: this need to be thread safe
     def log_event(self, type, data):
         this_entry = {'id': self.lastEventId,
@@ -32,17 +32,19 @@ class Lager:
         self.event_db.insert(this_entry)
 
     #TODO: this need to be thread safe
-    def find_events(self, start_time, end_time, type_filter):
+    def find_events(self, type_filter, start_time, end_time=None):
         if type_filter is None:
-            type_filter = []
-        if not hasattr(type_filter, '__iter__'):
-            type_filter = [type_filter]  #make a list if not one
+            type_filter = ""
+        type_filter = [x for x in type_filter.split(',') if x]
         if start_time == 'now':
             #get latest value
             if len(type_filter):
                 ret = []
                 for t in type_filter:
-                    ret.append(self.latestData[t])
+                    try:
+                        ret.append(self.latestData[t])
+                    except KeyError:
+                        pass
                 return ret
             else:
                 return self.latestData.values()
@@ -53,13 +55,16 @@ class Lager:
                 for t in type_filter:
                     filters.append (where('type') == str(t))
             if start_time is not None:
-                filters.append(where('time') >= start_time)
+                filters.append(where('time') >= float(start_time))
             if end_time is not None and end_time is not 'now':
-                filters.append(where('time') <= end_time)
+                filters.append(where('time') <= float(end_time))
         query = None
         for f in filters:
             if query is None:
                 query = f
             else:
                 query = f & query
-        return self.event_db.search(query)
+        if query:
+            return self.event_db.search(query)
+        else:
+            return self.event_db.all()
