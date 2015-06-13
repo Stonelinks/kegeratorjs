@@ -1,9 +1,7 @@
 __author__ = 'nwiles'
 import threading
-import queue
 import time
-from collections import deque
-
+import runningMean
 
 class ThermostatState:
     def __init__(self, set_point_deg_c, dead_band_deg_c, on_adds_heat):
@@ -15,22 +13,6 @@ class ThermostatSense:
     def __init__(self, deg_c, avg_deg_c):
         self.deg_c = deg_c
         self.avg_deg_c = avg_deg_c
-
-class RunningMean:
-    def __init__(self, window_size):
-        self.cache = deque()
-        self.cum_sum = 0
-        self.window_size = window_size
-    def add_val(self, val):
-        self.cache.append(val)
-        self.cum_sum += val
-        if len(self.cache) >= self.window_size:  # if window is saturated, subtract oldest value
-            self.cum_sum -= self.cache.popleft()
-            self.avg = self.cum_sum/float(self.window_size)
-        else:
-            self.avg = self.cum_sum/float(len(self.cache))
-    def get_avg(self):
-        return self.avg
 
 class Thermostat(threading.Thread):
     def __init__(self, tempInputFn, relay, on_adds_heat):

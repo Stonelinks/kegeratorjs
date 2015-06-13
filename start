@@ -1,6 +1,6 @@
 #!/bin/bash
 source environment
-ssh -i id_rsa ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
+ssh ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
 
 if ps ax | grep -v grep | grep "/bin/bash /home/${USER_NAME}/kegeratorjs/iked sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/ikePyIo/ikePyIo.py" > /dev/null
 then

@@ -1,0 +1,3 @@
+#!/bin/bash
+source environment
+ssh ${USER_NAME}@${IP_ADDR} sh -c "'cat >> .ssh/authorized_keys'" < ~/.ssh/id_rsa.pub

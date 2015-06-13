@@ -1,9 +1,9 @@
-from sf800 import SF800
-from thermostat import Thermostat
-from relay import Relay
-from w1thermsensor import W1ThermSensor
+import sf800
+import thermostat
+import relay
+import w1thermsensor
 import semantic_version as sv
-from time import sleep
+import time
 import RPIO
 
 class Ike:
@@ -11,11 +11,11 @@ class Ike:
     def __init__(self, relayPin, flow1Pin, flow2Pin):
         self.version=sv.Version('0.0.1')
         self.flowMeters = []
-        self.flowMeters.append( SF800(flow1Pin) )
-        self.flowMeters.append( SF800(flow2Pin) )
-        self.tempSensor = W1ThermSensor()
-        self.compressorRelay = Relay(relayPin)
-        self.thermostat = Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0)
+        self.flowMeters.append( sf800.SF800(flow1Pin) )
+        self.flowMeters.append( sf800.SF800(flow2Pin) )
+        self.tempSensor = w1thermsensor.W1ThermSensor()
+        self.compressorRelay = relay.Relay(relayPin)
+        self.thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0)
         self.thermostat.start()
         #TODO: pressure and ADC
         #self.kegPressure =
@@ -26,7 +26,7 @@ class Ike:
         while(1):
             for f in self.flowMeters:
                 print(f)
-            sleep(1)
+            time.sleep(1)
 
     def __del__(self):
         self.thermostat.join()

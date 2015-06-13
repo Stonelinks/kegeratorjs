@@ -5,3 +5,12 @@ __pycache__*
 *.out
 *.json
 *.temp
+
+virtualenv/*
+
+#InteliJ files
+workspace.xml
+tasks.xml
+
+#build output
+build/**

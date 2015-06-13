@@ -1,57 +1,62 @@
+#!/usr/bin/env python3
 import flask
-from flask import request
-from flask.views import MethodView
-from wtforms import Form, StringField, IntegerField, FloatField, validators, ValidationError
+import flask.views
+import wtforms
 import wtforms_json
 import lager
-from tinydb import TinyDB
+import tinydb
 
 log=lager.Lager('events.json')
 app = flask.Flask(__name__, static_folder='../../build')
 wtforms_json.init()
 
-class BeerForm(Form):
-    name = StringField('name', [validators.Length(max=64), validators.DataRequired()])
-    description = StringField('description', [validators.Length(max=1024), validators.DataRequired()])
-    brewedBy = StringField('brewedBy', [validators.Length(max=64), validators.DataRequired()])
-    style = StringField('style', [validators.Length(max=64), validators.DataRequired()])
-    abv = FloatField('ABV', [validators.NumberRange(min=0, max=100)])
-    FloatField('rating', [validators.NumberRange(min=0, max=100)])
-    FloatField('IBU', [validators.NumberRange(min=0, max=300)])
-    FloatField('SRM', [validators.NumberRange(min=0, max=100)])
-    FloatField('costPerPint')
+class BeerForm(wtforms.Form):
+    name = wtforms.StringField('name', [wtforms.validators.Length(max=64),
+                                        wtforms.validators.DataRequired()])
+    description = wtforms.StringField('description', [wtforms.validators.Length(max=1024),
+                                                      wtforms.validators.DataRequired()])
+    brewedBy = wtforms.StringField('brewedBy', [wtforms.validators.Length(max=64),
+                                                wtforms.validators.DataRequired()])
+    style = wtforms.StringField('style', [wtforms.validators.Length(max=64),
+                                          wtforms.validators.DataRequired()])
+    abv = wtforms.FloatField('ABV', [wtforms.validators.NumberRange(min=0, max=100)])
+    wtforms.FloatField('rating', [wtforms.validators.NumberRange(min=0, max=100)])
+    wtforms.FloatField('IBU', [wtforms.validators.NumberRange(min=0, max=300)])
+    wtforms.FloatField('SRM', [wtforms.validators.NumberRange(min=0, max=100)])
+    wtforms.FloatField('costPerPint')
     #TODO: list of ratings?
 
-class UserForm(Form):
-    StringField('name', [validators.Length(max=25), validators.DataRequired()])
-    StringField('email', [validators.Email()])
-    StringField('rfidId', [validators.Length(max=35)])
-    StringField('nfcId', [validators.Length(max=35)])
-    StringField('untappedName', [validators.Length(max=35)])
+class UserForm(wtforms.Form):
+    wtforms.StringField('name', [wtforms.validators.Length(max=25),
+                                 wtforms.validators.DataRequired()])
+    wtforms.StringField('email', [wtforms.validators.Email()])
+    wtforms.StringField('rfidId', [wtforms.validators.Length(max=35)])
+    wtforms.StringField('nfcId', [wtforms.validators.Length(max=35)])
+    wtforms.StringField('untappedName', [wtforms.validators.Length(max=35)])
     #TODO: list of pour ids?
 
-class KegForm(Form):
-    beerId = IntegerField('beerId', [validators.DataRequired()])
-    litersRemaining = FloatField('litersRemaining', [])
-    litersCapacity = FloatField('litersCapacity', [validators.DataRequired()])
+class KegForm(wtforms.Form):
+    beerId = wtforms.IntegerField('beerId', [wtforms.validators.DataRequired()])
+    litersRemaining = wtforms.FloatField('litersRemaining', [])
+    litersCapacity = wtforms.FloatField('litersCapacity', [wtforms.validators.DataRequired()])
     #TODO: validate litersRemaining < litersCapacity
 
-class KegeratorForm(Form):
-    StringField('name', [validators.Length(max=64)])
-    IntegerField('kegIds', [])
-    FloatField('desiredTemperatureC', [validators.NumberRange(min=-20, max=50)])
+class KegeratorForm(wtforms.Form):
+    wtforms.StringField('name', [wtforms.validators.Length(max=64)])
+    wtforms.IntegerField('kegIds', [])
+    wtforms.FloatField('desiredTemperatureC', [wtforms.validators.NumberRange(min=-20, max=50)])
 
-class ResourceApi(MethodView):
+class ResourceApi(flask.views.MethodView):
     def __init__(self, dbPath, resource_name, form_validator):
         super(ResourceApi, self).__init__()
-        self.db = TinyDB(dbPath)
+        self.db = tinydb.TinyDB(dbPath)
         self.resource_name = resource_name
         self.form_validator = form_validator
 
     def get(self, id):
         if id is None:
             # return a list of all resources
-            return flask.jsonify({self.resource_name: self.db.all()})
+            return flask.jsonify({'data': self.db.all()})
         else:
             # expose a single resource
             match = self.db.get(eid=id)
@@ -61,7 +66,7 @@ class ResourceApi(MethodView):
 
     def post(self):
         # create a new resource
-        form = self.form_validator.from_json(request.get_json())
+        form = self.form_validator.from_json(flask.request.get_json())
         if form.validate():
             return flask.jsonify({'id':self.db.insert(form.data)})
         else:
@@ -75,25 +80,16 @@ class ResourceApi(MethodView):
         except KeyError:
             flask.abort(404)
 
-    def partial_validate(self, form):
-        ok = True
-        errors = []
-        for f in form:
-            ok = ok and f.validate(form)
-            errors.append(f.errors)
-        return ok, {'errors': errors}
-
     def put(self, id):
         # update a single resource
-        form = self.form_validator.from_json(request.get_json())
-        valid, errors = self.partial_validate(form)
-        if valid:
-            value = self.db.get(eid=id)
-            delta = {k: v for k,v in form.data.items() if v is not None}
-            self.db.update(delta, eids=[id])
+        value = self.db.get(eid=id)
+        value.update(flask.request.get_json())
+        form = self.form_validator.from_json(value)
+        if form.validate():
+            self.db.update(form.data, eids=[id])
             return flask.jsonify(self.db.get(eid=id))
         else:
-            return flask.jsonify(errors), 400
+            return flask.jsonify(form.errors), 400
 
 
 class BeerApi(ResourceApi):
@@ -111,10 +107,10 @@ class KegApi(ResourceApi):
         super(KegApi, self).__init__('kegs.json', 'kegs', KegForm)
 
 
-class KegeratorApi(MethodView):
+class KegeratorApi(flask.views.MethodView):
     def __init__(self):
         super(KegeratorApi, self).__init__()
-        self.db = TinyDB('kegerator.json')
+        self.db = tinydb.TinyDB('kegerator.json')
         self.resource_name = "kegerator"
         self.form_validator = KegeratorForm
         if len(self.db.all()) == 0:
@@ -134,7 +130,7 @@ class KegeratorApi(MethodView):
 
     def put(self, id):
         # update thermostat
-        form = KegeratorForm.from_json(request.get_json())
+        form = KegeratorForm.from_json(flask.request.get_json())
         valid, errors = self.partial_validate(form)
         if valid:
             value = self.db.get(eid=id)
@@ -145,11 +141,11 @@ class KegeratorApi(MethodView):
         else:
             return flask.jsonify(errors), 400
 
-class EventApi(MethodView):
+class EventApi(flask.views.MethodView):
     def get(self):
-        types = request.args.get('types')
-        start = request.args.get('startTime')
-        end = request.args.get('endTime')
+        types = flask.request.args.get('types')
+        start = flask.request.args.get('startTime')
+        end = flask.request.args.get('endTime')
         # return matching event data
         events = log.find_events(types, start, end)
         return flask.jsonify({'events':events})
@@ -161,6 +157,14 @@ def register_api(view, endpoint, url, pk='id', pk_type='int'):
     app.add_url_rule(url, view_func=view_func, methods=['POST',])
     app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
                      methods=['GET', 'PUT', 'DELETE'])
+
+@app.route('/')
+def root():
+    return app.send_static_file('index.html')
+
+@app.route('/<path:path>')
+def send_static(path):
+    return app.send_static_file(path)
 
 register_api(BeerApi, 'beers', '/beers/', pk='id')
 register_api(UserApi, 'users', '/users/', pk='id')

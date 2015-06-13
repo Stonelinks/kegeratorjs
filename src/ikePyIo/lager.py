@@ -1,5 +1,5 @@
 __author__ = 'nwiles'
-from tinydb import TinyDB, where
+import tinydb
 import time
 from enum import Enum
 
@@ -14,7 +14,7 @@ class Event():
 class Lager:
     def __init__(self, event_log_path):
         self.lastEventId = 0
-        self.event_db = TinyDB(event_log_path)
+        self.event_db = tinydb.TinyDB(event_log_path)
         #cache one of each of the last event types
         self.latestData = {}
     def __del__(self):
@@ -53,11 +53,11 @@ class Lager:
             filters = []
             if type_filter is not None:
                 for t in type_filter:
-                    filters.append (where('type') == str(t))
+                    filters.append (tinydb.where('type') == str(t))
             if start_time is not None:
-                filters.append(where('time') >= float(start_time))
+                filters.append(tinydb.where('time') >= float(start_time))
             if end_time is not None and end_time is not 'now':
-                filters.append(where('time') <= float(end_time))
+                filters.append(tinydb.where('time') <= float(end_time))
         query = None
         for f in filters:
             if query is None:
