@@ -51,7 +51,7 @@ class ResourceApi(MethodView):
     def get(self, id):
         if id is None:
             # return a list of all resources
-            return flask.jsonify({self.resource_name: self.db.all()})
+            return flask.jsonify({'data': self.db.all()})
         else:
             # expose a single resource
             match = self.db.get(eid=id)
