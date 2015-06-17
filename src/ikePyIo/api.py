@@ -107,18 +107,17 @@ class KegApi(ResourceApi):
         super(KegApi, self).__init__('kegs.json', 'kegs', KegForm)
 
 
-class KegeratorApi(flask.views.MethodView):
+class KegeratorSettingsApi(flask.views.MethodView):
     def __init__(self):
-        super(KegeratorApi, self).__init__()
+        super(KegeratorSettingsApi, self).__init__()
         self.db = tinydb.TinyDB('kegerator.json')
         self.resource_name = "kegerator"
         self.form_validator = KegeratorForm
         if len(self.db.all()) == 0:
             self.db.insert({'name':'untitled',
-                            'desiredTemperatureC':4.0,
-                            'keg_ids': [0, 1]
+                            'thermostat.setTempC':4.0,
+                            'kegIds': [0, 1]
                             })
-
     def get(self):
         # return kegerator data
         kegeratorState = self.db.all()[0]
@@ -140,6 +139,14 @@ class KegeratorApi(flask.views.MethodView):
             return flask.jsonify(self.db.get(eid=id))
         else:
             return flask.jsonify(errors), 400
+
+
+class SensorsApi(flask.views.MethodView):
+    def get(self):
+        # return kegerator sensor data
+        latest_sensors = log.find_events(lager.Event.sensors, 'now')
+        return flask.jsonify(latest_sensors)
+
 
 class EventApi(flask.views.MethodView):
     def get(self):
@@ -169,7 +176,8 @@ def send_static(path):
 register_api(BeerApi, 'beers', '/beers/', pk='id')
 register_api(UserApi, 'users', '/users/', pk='id')
 register_api(KegApi, 'kegs', '/kegs/', pk='id')
-app.add_url_rule('/kegerator/', view_func=KegeratorApi.as_view('kegerator'), methods=['GET','PUT'])
+app.add_url_rule('/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
+app.add_url_rule('/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
 app.add_url_rule('/events/', view_func=EventApi.as_view('events'), methods=['GET'])
 
 app.run(host='0.0.0.0', debug=True)

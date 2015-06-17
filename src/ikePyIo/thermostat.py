@@ -49,9 +49,9 @@ class Thermostat(threading.Thread):
             time.sleep(0.5)
 
 
-    def set_state(self, set_point_deg_c, dead_band_deg_c, on_adds_heat):
-        if not self._stop_event.isSet():
-            self._stateInputQ.put(ThermostatState(set_point_deg_c, dead_band_deg_c, on_adds_heat))
+    def set_state(self, state):
+        with self._state_lock:
+            self._state = state
 
     def get_state(self):
         with self._state_lock:
@@ -60,11 +60,12 @@ class Thermostat(threading.Thread):
             return state, sense
 
     def __str__(self):
-        return "Thermostat: sense:{:2.1f} avg:{:2.1f} set:{:2.1f} delta:{:2.1f}degC {}".format(self._sense.deg_c,
-                                                                                               self._sense.avg_deg_c,
-                                                                                               self._state.set_point_deg_c,
-                                                                                               self._sense.deg_c-self._state.set_point_deg_c,
-                                                                                               self._relay)
+        with self._state_lock:
+            return "Thermostat: sense:{:2.1f} avg:{:2.1f} set:{:2.1f} delta:{:2.1f}degC {}".format(self._sense.deg_c,
+                                                                                                       self._sense.avg_deg_c,
+                                                                                                       self._state.set_point_deg_c,
+                                                                                                       self._sense.deg_c-self._state.set_point_deg_c,
+                                                                                                       self._relay)
     def join(self, timeout=None):
         self._stop_event.set()
         super(Thermostat, self).join()
