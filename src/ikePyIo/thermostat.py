@@ -17,7 +17,7 @@ class ThermostatSense:
 class Thermostat(threading.Thread):
     def __init__(self, tempInputFn, relay, on_adds_heat):
         threading.Thread.__init__(self, name="Thermostat")
-        self._state = ThermostatState(set_point_deg_c=4, dead_band_deg_c=2, on_adds_heat=on_adds_heat)
+        self._state = ThermostatState(set_point_deg_c=2.5, dead_band_deg_c=2, on_adds_heat=on_adds_heat)
         self._getTempInput_DegC = tempInputFn
         self._sense = ThermostatSense(0, 0)
         self._avg_deg_c = RunningMean(1000)
@@ -45,6 +45,7 @@ class Thermostat(threading.Thread):
             except Exception as e:
                 print("Thermostat: error reading temp or setting output")
                 print(e)
+            print(chr(27) + "[2J")
             print(self.__str__())
             time.sleep(0.5)
 
