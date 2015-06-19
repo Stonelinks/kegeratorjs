@@ -11,10 +11,12 @@ class SF800:
 
     def __call__(self, channel, value):
         self.flowCounts +=1
-        #todo: add filtering logic
 
     def __del__(self):
         RPIO.del_interrupt_callback(self.gpio_id)
 
     def __str__(self):
         return "Flow: ticks:{}".format(self.flowCounts)
+
+    def get_flow_liters(self):
+        return float(self.flowCounts)/SF800._TICKS_PER_LITER
