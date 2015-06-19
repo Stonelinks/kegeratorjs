@@ -1,5 +1,5 @@
 __author__ = 'nwiles'
-from tinydb import TinyDB, where
+import tinydb
 import time
 import threading
 
@@ -14,7 +14,7 @@ class Event():
 class Lager:
     def __init__(self, event_log_path):
         self.lastEventId = 0
-        self.event_db = TinyDB(event_log_path)
+        self.event_db = tinydb.TinyDB(event_log_path)
         #cache one of each of the last event types
         self.latestData = {}
         self._api_lock = threading.Lock()
@@ -23,6 +23,7 @@ class Lager:
         self.event_db.close()
 
     def log_event(self, type, data):
+        with self._api_lock:
             this_entry = {'id': self.lastEventId,
                           'type': str(type),
                           'time': time.time(),
@@ -33,7 +34,6 @@ class Lager:
             #TODO: need to determine when to log to file...likely need to decimate?
             self.event_db.insert(this_entry)
 
-    #TODO: this need to be thread safe
     def find_events(self, type_filter, start_time, end_time=None):
         with self._api_lock:
             if type_filter is None:
@@ -56,11 +56,11 @@ class Lager:
                 filters = []
                 if type_filter is not None:
                     for t in type_filter:
-                        filters.append (where('type') == str(t))
+                        filters.append (tinydb.where('type') == str(t))
                 if start_time is not None:
-                    filters.append(where('time') >= float(start_time))
+                    filters.append(tinydb.where('time') >= float(start_time))
                 if end_time is not None and end_time is not 'now':
-                    filters.append(where('time') <= float(end_time))
+                    filters.append(tinydb.where('time') <= float(end_time))
             query = None
             for f in filters:
                 if query is None:

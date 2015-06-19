@@ -8,7 +8,7 @@ host_addr = 'http://localhost:5000'
 
 
 
-class TestLager(unittest.TestCase):
+class TestApi(unittest.TestCase):
     def post(self, url, payload):
         header = {'Content-type': 'application/json'}
         r = requests.post(url, data=json.dumps(payload), headers=header)
@@ -84,6 +84,14 @@ class TestLager(unittest.TestCase):
                   'litersCapacity': 'a'}
         reply, status = self.put(host_addr+'/kegs/'+ str(id), delta)
         self.assertEqual(status, 400)
+
+        delta =  {'beerId': 7}
+        reply, status = self.put(host_addr+'/kegs/'+ str(id), delta)
+        self.assertEqual(status, 200)
+        reply, status = self.get(host_addr + '/kegs/' + str(id))
+        self.assertEqual(reply['beerId'], 7)
+        self.assertEqual(status, 200)
+
 
         #delete
         status = self.delete(host_addr+'/kegs/'+ str(id))

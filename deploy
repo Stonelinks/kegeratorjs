@@ -1,4 +1,3 @@
-
 #!/bin/bash
 source environment
 rsync -avz --rsh="ssh" --exclude 'node_modules' --exclude '.git' . ssh ${USER_NAME}@${IP_ADDR}:~/kegeratorjs

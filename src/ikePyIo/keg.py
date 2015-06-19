@@ -52,7 +52,7 @@ class Keg(threading.Thread):
 
                 #flow rate
                 self._flow_rate_l_per_s = delta_flow / delta_t
-                print(self._flow_rate_l_per_s)
+
                 if self._flow_rate_l_per_s >= self._pour_threshold_l_per_s:
                     if not self._is_pouring:
                         self._is_pouring = True

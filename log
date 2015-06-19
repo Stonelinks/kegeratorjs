@@ -1,5 +1,5 @@
 #!/bin/bash
 source environment
-ssh -i id_rsa ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
+ssh ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
 tail -f ~/.iked.log
 EOF
