@@ -55,12 +55,12 @@ class Thermostat(threading.Thread):
     def get_state(self):
         with self._state_lock:
             state = self._state
-            return state
+            return state.deepcopy()
 
     def get_sense(self):
         with self._state_lock:
             sense = self._sense
-            return sense
+            return sense.deepcopy()
 
     def __str__(self):
         with self._state_lock:

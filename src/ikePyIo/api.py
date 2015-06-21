@@ -6,9 +6,10 @@ import wtforms_json
 import lager
 import tinydb
 import thermostat
+import werkzeug
 
 app = flask.Flask(__name__, static_folder='../../build')
-global log
+global ike
 
 class BeerForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64),
@@ -19,21 +20,25 @@ class BeerForm(wtforms.Form):
                                                 wtforms.validators.DataRequired()])
     style = wtforms.StringField('style', [wtforms.validators.Length(max=64),
                                           wtforms.validators.DataRequired()])
-    abv = wtforms.FloatField('ABV', [wtforms.validators.NumberRange(min=0, max=100)])
-    wtforms.FloatField('rating', [wtforms.validators.NumberRange(min=0, max=100)])
-    wtforms.FloatField('IBU', [wtforms.validators.NumberRange(min=0, max=300)])
-    wtforms.FloatField('SRM', [wtforms.validators.NumberRange(min=0, max=100)])
-    wtforms.FloatField('costPerPint')
+    abv = wtforms.FloatField('abv', [wtforms.validators.NumberRange(min=0, max=100)])
+    rating = wtforms.FloatField('rating', [wtforms.validators.NumberRange(min=0, max=100)])
+    ibu = wtforms.FloatField('ibu', [wtforms.validators.NumberRange(min=0, max=300)])
+    srm = wtforms.FloatField('srm', [wtforms.validators.NumberRange(min=0, max=100)])
+    costPerPint = wtforms.FloatField('costPerPint')
+    #TODO: date on tap
+    #TODO finished
     #TODO: list of ratings?
 
+
 class UserForm(wtforms.Form):
-    wtforms.StringField('name', [wtforms.validators.Length(max=25),
+    name = wtforms.StringField('name', [wtforms.validators.Length(max=25),
                                  wtforms.validators.DataRequired()])
-    wtforms.StringField('email', [wtforms.validators.Email()])
-    wtforms.StringField('rfidId', [wtforms.validators.Length(max=35)])
-    wtforms.StringField('nfcId', [wtforms.validators.Length(max=35)])
-    wtforms.StringField('untappedName', [wtforms.validators.Length(max=35)])
+    email = wtforms.StringField('email', [wtforms.validators.Email()])
+    rfidId = wtforms.StringField('rfidId', [wtforms.validators.Length(max=35)])
+    nfcId = wtforms.StringField('nfcId', [wtforms.validators.Length(max=35)])
+    untappedName = wtforms.StringField('untappedName', [wtforms.validators.Length(max=35)])
     #TODO: list of pour ids?
+
 
 class KegForm(wtforms.Form):
     beerId = wtforms.IntegerField('beerId', [wtforms.validators.DataRequired()])
@@ -41,10 +46,12 @@ class KegForm(wtforms.Form):
     litersCapacity = wtforms.FloatField('litersCapacity', [wtforms.validators.DataRequired()])
     #TODO: validate litersRemaining < litersCapacity
 
+
 class KegeratorForm(wtforms.Form):
-    wtforms.StringField('name', [wtforms.validators.Length(max=64)])
-    wtforms.IntegerField('kegIds', [])
-    wtforms.FloatField('thermostat.setTempC', [wtforms.validators.NumberRange(min=-20, max=50)])
+    name = wtforms.StringField('name', [wtforms.validators.Length(max=64)])
+    kegIds = wtforms.IntegerField('kegIds', [])
+    termostat_set_temp_c = wtforms.FloatField('thermostat.setTempC', [wtforms.validators.NumberRange(min=-20, max=50)])
+
 
 class ResourceApi(flask.views.MethodView):
     def __init__(self, dbPath, resource_name, form_validator):
@@ -56,21 +63,24 @@ class ResourceApi(flask.views.MethodView):
     def get(self, id):
         if id is None:
             # return a list of all resources
-            return flask.jsonify({'data': self.db.all()})
+            match = self.db.all()
         else:
             # expose a single resource
             match = self.db.get(eid=id)
             if match is None:
                 flask.abort(404)
-            return flask.jsonify(match)
+        return flask.jsonify({'data': match})
 
     def post(self):
         # create a new resource
         form = self.form_validator.from_json(flask.request.get_json())
         if form.validate():
-            return flask.jsonify({'id':self.db.insert(form.data)})
+            print("POST1 {}".format(flask.request.get_json()))
+            print("POST {}".format(form.data))
+            ret = flask.jsonify({'id':self.db.insert(form.data)})
         else:
-            return flask.jsonify(form.errors), 400
+            raise werkzeug.exceptions.BadRequest(responce=flask.jsonify(form.errors))
+        return ret
 
     def delete(self, id):
         # delete a single resource
@@ -89,7 +99,7 @@ class ResourceApi(flask.views.MethodView):
             self.db.update(form.data, eids=[id])
             return flask.jsonify(self.db.get(eid=id))
         else:
-            return flask.jsonify(form.errors), 400
+            return flask.jsonify(form.errors), 40
 
 
 class BeerApi(ResourceApi):
@@ -102,9 +112,34 @@ class UserApi(ResourceApi):
         super(UserApi, self).__init__('users.json', 'users', UserForm)
 
 
-class KegApi(ResourceApi):
-    def __init__(self):
-        super(KegApi, self).__init__('kegs.json', 'kegs', KegForm)
+class KegApi(flask.views.MethodView):
+    def get(self, id):
+        code = 200
+        if id is None:
+            ret = {'data':[]}
+            for k in ike.kegs:
+                ret['data'].append(k.get_state())
+        else:
+            if id<len(ike.kegs):
+                ret = {'data': ike.kegs[id].get_state()}
+            else:
+                ret = {'error' : '{} is not a valid keg id'.format(id)}
+                code = 404
+        return flask.jsonify(ret), code
+
+    def put(self, id):
+        if id<len(ike.kegs):
+            value = ike.kegs[id].get_state().copy()
+            value.update(flask.request.get_json())
+            form = KegForm.from_json(value)
+            if form.validate():
+                ike.kegs[id].set_state(form.data)
+                ret = ike.kegs[id].get_state()
+            else:
+                raise werkzeug.exceptions.BadRequest()
+        else:
+            raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
+        return flask.jsonify(ret)
 
 
 class KegeratorSettingsApi(flask.views.MethodView):
@@ -134,16 +169,16 @@ class KegeratorSettingsApi(flask.views.MethodView):
             self.db.update(form.data, eids=[id])
             updated = self.db.get(eid=id)
             #apply to thermostat
-            #self.thermostat.set_state(thermostat.ThermostatState(updated['thermostat.setTempC']))
+            ike.thermostat.set_state(thermostat.ThermostatState(updated['thermostat.setTempC']))
             return flask.jsonify(updated)
         else:
-            return flask.jsonify(form.errors), 400
+            return flask.jsonify(form.errors), 40
 
 
 class SensorsApi(flask.views.MethodView):
     def get(self):
         # return kegerator sensor data
-        latest_sensors = log.find_events(lager.Event.sensors, 'now')
+        latest_sensors = ike.logger.find_events(lager.Event.sensors, 'now')
         return flask.jsonify(latest_sensors)
 
 
@@ -153,7 +188,7 @@ class EventApi(flask.views.MethodView):
         start = flask.request.args.get('startTime')
         end = flask.request.args.get('endTime')
         # return matching event data
-        events = log.find_events(types, start, end)
+        events = ike.logger.find_events(types, start, end)
         return flask.jsonify({'data':events})
 
 def register_api(view, endpoint, url, pk='id', pk_type='int'):
@@ -170,13 +205,17 @@ def root():
 def send_static(path):
     return app.send_static_file(path)
 
-def launch(thermostat, kegs, logger=lager.Lager('events.json')):
-    global log
-    log = logger
+def launch(ikeInstance):
+    global ike
+    ike = ikeInstance;
     wtforms_json.init()
     register_api(BeerApi, 'beers', '/beers/', pk='id')
     register_api(UserApi, 'users', '/users/', pk='id')
-    register_api(KegApi, 'kegs', '/kegs/', pk='id')
+
+    view_func = KegApi.as_view('kegs')
+    app.add_url_rule('/kegs/', defaults={'id': None}, view_func=view_func, methods=['GET',])
+    app.add_url_rule('%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
+
     app.add_url_rule('/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
     app.add_url_rule('/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
     app.add_url_rule('/events/', view_func=EventApi.as_view('events'), methods=['GET'])
@@ -185,5 +224,24 @@ def launch(thermostat, kegs, logger=lager.Lager('events.json')):
 
     app.run(host='0.0.0.0', debug=True)
 
-launch(None, None)
+import os
 
+class KegStub:
+    def __init__(self):
+        self._state={}
+        pass
+    def get_state(self):
+        return self._state
+    def set_state(self, state):
+        self._state = state
+
+class IkeStub:
+    def __init__(self):
+        self.logger = lager.Lager('log.temp')
+        self.kegs = []
+        self.kegs.append(KegStub())
+        self.kegs.append(KegStub())
+
+
+ike = IkeStub()
+launch(ike)

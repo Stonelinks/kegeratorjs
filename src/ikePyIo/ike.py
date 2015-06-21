@@ -7,6 +7,7 @@ import time
 import RPIO
 import keg
 import lager
+import api
 
 class Ike:
     def __init__(self, relayPin, flow1Pin, flow2Pin):
@@ -30,11 +31,15 @@ class Ike:
 
     def run(self):
         print("Welcome to IKE, version {}".format(self.version))
+        api.launch(self)
         while(1):
-            print(chr(27) + "[2J")
-            print(self.thermostat)
-            print(self)
-            time.sleep(1)
+                print(chr(27) + "[2J")
+                print(self.thermostat)
+                print(self)
+                time.sleep(1)
+
+    def get_state(self):
+        return {}
 
     def __del__(self):
         self.thermostat.join()
