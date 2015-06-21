@@ -10,10 +10,13 @@ class TestApi(unittest.TestCase):
     def post(self, url, payload):
         header = {'Content-type': 'application/json'}
         r = requests.post(url, data=json.dumps(payload), headers=header)
+        id=0
         try:
             id = r.json()['id']
+        except ValueError:
+            pass
         except KeyError:
-            id = 0
+            pass
         return id, r.status_code
 
     def put(self, url, payload):
@@ -43,7 +46,8 @@ class TestApi(unittest.TestCase):
                    'abv':5.9,
                    'rating':4.9,
                    'srm':30,
-                   'costPerPint':1.40}
+                   'costPerPint':1.40,
+                   'ibu':100}
         id, status = self.post(host_addr + '/beers/',  payload)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))

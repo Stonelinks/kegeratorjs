@@ -68,18 +68,17 @@ class ResourceApi(flask.views.MethodView):
             # expose a single resource
             match = self.db.get(eid=id)
             if match is None:
-                flask.abort(404)
+                raise werkzeug.exceptions.NotFound()
         return flask.jsonify({'data': match})
 
     def post(self):
         # create a new resource
         form = self.form_validator.from_json(flask.request.get_json())
         if form.validate():
-            print("POST1 {}".format(flask.request.get_json()))
-            print("POST {}".format(form.data))
             ret = flask.jsonify({'id':self.db.insert(form.data)})
         else:
-            raise werkzeug.exceptions.BadRequest(responce=flask.jsonify(form.errors))
+            print(form.errors)
+            raise werkzeug.exceptions.BadRequest(flask.jsonify(form.errors))
         return ret
 
     def delete(self, id):
@@ -88,7 +87,7 @@ class ResourceApi(flask.views.MethodView):
             self.db.remove(eids=[id])
             return flask.jsonify({'status': 'OK'})
         except KeyError:
-            flask.abort(404)
+            raise werkzeug.exceptions.NotFound()
 
     def put(self, id):
         # update a single resource
@@ -99,7 +98,7 @@ class ResourceApi(flask.views.MethodView):
             self.db.update(form.data, eids=[id])
             return flask.jsonify(self.db.get(eid=id))
         else:
-            return flask.jsonify(form.errors), 40
+            raise werkzeug.exceptions.BadRequest(flask.jsonify(form.errors))
 
 
 class BeerApi(ResourceApi):
@@ -114,7 +113,6 @@ class UserApi(ResourceApi):
 
 class KegApi(flask.views.MethodView):
     def get(self, id):
-        code = 200
         if id is None:
             ret = {'data':[]}
             for k in ike.kegs:
@@ -123,9 +121,8 @@ class KegApi(flask.views.MethodView):
             if id<len(ike.kegs):
                 ret = {'data': ike.kegs[id].get_state()}
             else:
-                ret = {'error' : '{} is not a valid keg id'.format(id)}
-                code = 404
-        return flask.jsonify(ret), code
+                raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
+        return flask.jsonify(ret)
 
     def put(self, id):
         if id<len(ike.kegs):
@@ -157,7 +154,7 @@ class KegeratorSettingsApi(flask.views.MethodView):
             if form.validate():
                 self.db.insert(form.data)
     def get(self):
-        # return kegerator data
+        # return kegerator settings data
         return flask.jsonify(self.db.all()[0])
 
     def put(self):
@@ -224,16 +221,19 @@ def launch(ikeInstance):
 
     app.run(host='0.0.0.0', debug=True)
 
-import os
-
 class KegStub:
     def __init__(self):
         self._state={}
-        pass
     def get_state(self):
-        return self._state
+        return self._state.copy()
     def set_state(self, state):
         self._state = state
+
+def set_relay(input):
+    pass
+
+def temp_input():
+    return 4.0
 
 class IkeStub:
     def __init__(self):
@@ -241,7 +241,7 @@ class IkeStub:
         self.kegs = []
         self.kegs.append(KegStub())
         self.kegs.append(KegStub())
-
+        self.thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
 
 ike = IkeStub()
 launch(ike)

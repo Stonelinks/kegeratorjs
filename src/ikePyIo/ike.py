@@ -23,7 +23,7 @@ class Ike:
         #thermostat
         self.tempSensor = w1thermsensor.W1ThermSensor()
         self.compressorRelay = relay.Relay(relayPin)
-        self.thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0)
+        self.thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0, logger=self.logger)
         self.thermostat.start()
         #TODO: pressure and ADC
         #self.kegPressure =
