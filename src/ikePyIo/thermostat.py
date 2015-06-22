@@ -6,7 +6,7 @@ import lager
 import tinydb
 
 class ThermostatState:
-    def __init__(self, set_point_deg_c, dead_band_deg_c, on_adds_heat):
+    def __init__(self, set_point_deg_c=0, dead_band_deg_c=0, on_adds_heat=False):
         self.set_point_deg_c = set_point_deg_c
         self.dead_band_deg_c = dead_band_deg_c
         self.on_adds_heat = on_adds_heat
@@ -16,10 +16,10 @@ class ThermostatState:
                 "deadBandDegC": self.dead_band_deg_c,
                 'onAddsHeat': self.on_adds_heat}
 
-    def from_json(self, input):
-        self.set_point_deg_c = input['setPointDegC']
-        self.dead_band_deg_c = input['deadBandDegC']
-        self.on_adds_heat = input['onAddsHeat']
+    def from_json(self, value):
+        self.set_point_deg_c = value['setPointDegC']
+        self.dead_band_deg_c = value['deadBandDegC']
+        self.on_adds_heat = value['onAddsHeat']
         return self
 
 class ThermostatSense:
@@ -49,26 +49,30 @@ class Thermostat(threading.Thread):
 
     def run(self):
         while not self._stop_event.isSet():
-            try:
-                new_reading_deg_c = self._getTempInput_DegC()
-                with self._state_lock:
-                    inputs = ThermostatState.from_json(self._db.all()[0])
-                    self._sense.deg_c = new_reading_deg_c
-                    self._avg_deg_c.add_val(new_reading_deg_c)
-                    self._sense.avg_deg_c = self._avg_deg_c.get_avg()
-                    #run logic:
-                    if self._sense.deg_c > inputs.set_point_deg_c+inputs.dead_band_deg_c:
-                        # too warm
-                        self._outputSetting = not inputs.on_adds_heat
-                    elif self._sense.deg_c < inputs.set_point_deg_c-inputs.dead_band_deg_c:
-                        # too cold
-                        self._outputSetting = inputs.on_adds_heat
-                    self._relay(self._outputSetting)
-                    self._logger.log_event(lager.Event.thermostatSense, {self._sense.to_json()})
-            except Exception as e:
-                print("Thermostat: error reading temp or setting output")
-                print(e)
+            self.loop()
             time.sleep(5.0)
+
+    def loop(self):
+        try:
+            new_reading_deg_c = self._getTempInput_DegC()
+            with self._state_lock:
+                inputs = ThermostatState()
+                inputs.from_json(value=self._db.all()[0])
+                self._sense.deg_c = new_reading_deg_c
+                self._avg_deg_c.add_val(new_reading_deg_c)
+                self._sense.avg_deg_c = self._avg_deg_c.get_avg()
+                #run logic:
+                if self._sense.deg_c > inputs.set_point_deg_c+inputs.dead_band_deg_c:
+                    # too warm
+                    self._outputSetting = not inputs.on_adds_heat
+                elif self._sense.deg_c < inputs.set_point_deg_c-inputs.dead_band_deg_c:
+                    # too cold
+                    self._outputSetting = inputs.on_adds_heat
+                self._relay(self._outputSetting)
+                self._logger.log_event(lager.Event.thermostatSense, self._sense.to_json())
+        except Exception as e:
+            print("Thermostat: error reading temp or setting output")
+            print(e)
 
     def set_state(self, state):
         with self._state_lock:

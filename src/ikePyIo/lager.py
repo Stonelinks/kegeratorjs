@@ -7,10 +7,8 @@ class Event():
     addKeg='addKeg' #new keg on tap
     finishedKeg='finishedKeg' #keg is finished
     pouredBeer='pouredBeer' #someone poured a beer
-    sensors='sensor' #current sensor state
     thermostatSense='thermostatSense' #thermostat sense changed
     thermostatSettings='thermostatSettings' #thermostat settings changed
-    settings='setting' #kegerator settings changed
     newUser='newUser' # added a new user (coming in 1.0)
 
 class Lager:
