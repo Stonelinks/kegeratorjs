@@ -3,13 +3,12 @@ import flask
 import flask.views
 import wtforms
 import wtforms_json
-import lager
 import tinydb
-import thermostat
 import werkzeug
+import ike
 
 app = flask.Flask(__name__, static_folder='../../build')
-global ike
+global ikeInstance
 
 class BeerForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64),
@@ -50,7 +49,7 @@ class KegForm(wtforms.Form):
 class KegeratorForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64)])
     kegIds = wtforms.IntegerField('kegIds', [])
-    termostat_set_temp_c = wtforms.FloatField('thermostat.setTempC', [wtforms.validators.NumberRange(min=-20, max=50)])
+    termostat_set_temp_c = wtforms.FloatField('ike.thermostat.setTempC', [wtforms.validators.NumberRange(min=-20, max=50)])
 
 
 class ResourceApi(flask.views.MethodView):
@@ -115,23 +114,23 @@ class KegApi(flask.views.MethodView):
     def get(self, id):
         if id is None:
             ret = {'data':[]}
-            for k in ike.kegs:
+            for k in ikeInstance.kegs:
                 ret['data'].append(k.get_state())
         else:
-            if id<len(ike.kegs):
-                ret = {'data': ike.kegs[id].get_state()}
+            if id<len(ikeInstance.kegs):
+                ret = {'data': ikeInstance.kegs[id].get_state()}
             else:
                 raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
         return flask.jsonify(ret)
 
     def put(self, id):
-        if id<len(ike.kegs):
-            value = ike.kegs[id].get_state().copy()
+        if id<len(ikeInstance.kegs):
+            value = ikeInstance.kegs[id].get_state().copy()
             value.update(flask.request.get_json())
             form = KegForm.from_json(value)
             if form.validate():
-                ike.kegs[id].set_state(form.data)
-                ret = ike.kegs[id].get_state()
+                ikeInstance.kegs[id].set_state(form.data)
+                ret = ikeInstance.kegs[id].get_state()
             else:
                 raise werkzeug.exceptions.BadRequest()
         else:
@@ -147,7 +146,7 @@ class KegeratorSettingsApi(flask.views.MethodView):
         self.form_validator = KegeratorForm
         if len(self.db.all()) == 0:
             initial = {'name':'Ike',
-                       'thermostat.setTempC':4.0,
+                       'ike.thermostat.setTempC':4.0,
                        'kegIds': [0, 1]
                        }
             form = self.form_validator.from_json(initial)
@@ -158,15 +157,15 @@ class KegeratorSettingsApi(flask.views.MethodView):
         return flask.jsonify(self.db.all()[0])
 
     def put(self):
-        # update thermostat
+        # update ike.thermostat
         value = self.db.get(eid=id)
         value.update(flask.request.get_json())
         form = self.form_validator.from_json(value)
         if form.validate():
             self.db.update(form.data, eids=[id])
             updated = self.db.get(eid=id)
-            #apply to thermostat
-            ike.thermostat.set_state(thermostat.ThermostatState(updated['thermostat.setTempC']))
+            #apply to ike.thermostat
+            ikeInstance.ike.thermostat.set_state(ike.thermostat.ThermostatState(updated['ike.thermostat.setTempC']))
             return flask.jsonify(updated)
         else:
             return flask.jsonify(form.errors), 40
@@ -175,7 +174,7 @@ class KegeratorSettingsApi(flask.views.MethodView):
 class SensorsApi(flask.views.MethodView):
     def get(self):
         # return kegerator sensor data
-        latest_sensors = ike.logger.find_events(lager.Event.sensors, 'now')
+        latest_sensors = ikeInstance.logger.find_events(ike.lager.Event.sensors, 'now')
         return flask.jsonify(latest_sensors)
 
 
@@ -185,7 +184,7 @@ class EventApi(flask.views.MethodView):
         start = flask.request.args.get('startTime')
         end = flask.request.args.get('endTime')
         # return matching event data
-        events = ike.logger.find_events(types, start, end)
+        events = ikeInstance.logger.find_events(types, start, end)
         return flask.jsonify({'data':events})
 
 def register_api(view, endpoint, url, pk='id', pk_type='int'):
@@ -202,9 +201,9 @@ def root():
 def send_static(path):
     return app.send_static_file(path)
 
-def launch(ikeInstance):
-    global ike
-    ike = ikeInstance;
+def launch(_ikeInstance):
+    global ikeInstance
+    ikeInstance = _ikeInstance;
     wtforms_json.init()
     register_api(BeerApi, 'beers', '/beers/', pk='id')
     register_api(UserApi, 'users', '/users/', pk='id')
@@ -237,11 +236,11 @@ def temp_input():
 
 class IkeStub:
     def __init__(self):
-        self.logger = lager.Lager('log.temp')
+        self.logger = ike.lager.Lager('log.temp')
         self.kegs = []
         self.kegs.append(KegStub())
         self.kegs.append(KegStub())
-        self.thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
+        self.ike.thermostat = ike.thermostat.Thermostat(temp_input, set_relay, False, self.logger);
 
-ike = IkeStub()
-launch(ike)
+# ike = IkeStub()
+# launch(ike)
