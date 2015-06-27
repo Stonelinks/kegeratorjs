@@ -1,5 +1,8 @@
 __author__ = 'nwiles'
-import RPIO
+try:
+    import RPIO
+except ImportError:
+    pass
 
 class SF800:
     _TICKS_PER_LITER = 5400

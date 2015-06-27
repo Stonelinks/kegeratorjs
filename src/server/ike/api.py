@@ -41,8 +41,8 @@ class UserForm(wtforms.Form):
 
 class KegForm(wtforms.Form):
     beerId = wtforms.IntegerField('beerId', [wtforms.validators.DataRequired()])
-    litersRemaining = wtforms.FloatField('litersRemaining', [])
-    litersCapacity = wtforms.FloatField('litersCapacity', [wtforms.validators.DataRequired()])
+    consumedL = wtforms.FloatField('consumedL', [])
+    capacityL = wtforms.FloatField('capacityL', [wtforms.validators.DataRequired()])
     #TODO: validate litersRemaining < litersCapacity
 
 
@@ -112,28 +112,23 @@ class UserApi(ResourceApi):
 
 class KegApi(flask.views.MethodView):
     def get(self, id):
-        if id is None:
-            ret = {'data':[]}
-            for k in ikeInstance.kegs:
-                ret['data'].append(k.get_state())
-        else:
-            if id<len(ikeInstance.kegs):
-                ret = {'data': ikeInstance.kegs[id].get_state()}
-            else:
-                raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
+        try:
+            ret = {'data':ikeInstance._kegManager.dispatch(id, 'get_state')}
+        except KeyError:
+            raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
         return flask.jsonify(ret)
 
     def put(self, id):
-        if id<len(ikeInstance.kegs):
-            value = ikeInstance.kegs[id].get_state().copy()
+        try:
+            value = ikeInstance._kegManager.dispatch(id, 'get_state')
             value.update(flask.request.get_json())
             form = KegForm.from_json(value)
             if form.validate():
-                ikeInstance.kegs[id].set_state(form.data)
-                ret = ikeInstance.kegs[id].get_state()
+                ikeInstance._kegManager.dispatch(id, 'set_state', form.data)
+                ret = ikeInstance._kegManager.dispatch(id, 'get_state')
             else:
-                raise werkzeug.exceptions.BadRequest()
-        else:
+                raise werkzeug.exceptions.BadRequest(form.errors)
+        except KeyError:
             raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
         return flask.jsonify(ret)
 
@@ -147,7 +142,7 @@ class KegeratorSettingsApi(flask.views.MethodView):
         if len(self.db.all()) == 0:
             initial = {'name':'Ike',
                        'ike.thermostat.setTempC':4.0,
-                       'kegIds': [0, 1]
+                       'kegIds': [1, 2]
                        }
             form = self.form_validator.from_json(initial)
             if form.validate():
@@ -220,27 +215,27 @@ def launch(_ikeInstance):
 
     app.run(host='0.0.0.0', debug=True)
 
-class KegStub:
-    def __init__(self):
-        self._state={}
-    def get_state(self):
-        return self._state.copy()
-    def set_state(self, state):
-        self._state = state
-
 def set_relay(input):
     pass
 
 def temp_input():
     return 4.0
 
+class FlowStub:
+    def get_flow_liters(self):
+        return True
+
+import thermostat
+import keg
+
 class IkeStub:
     def __init__(self):
         self.logger = ike.lager.Lager('log.temp')
-        self.kegs = []
-        self.kegs.append(KegStub())
-        self.kegs.append(KegStub())
-        self.ike.thermostat = ike.thermostat.Thermostat(temp_input, set_relay, False, self.logger);
+        flow_stubs = []
+        flow_stubs.append(FlowStub())
+        flow_stubs.append(FlowStub())
+        self._kegManager = keg.KegManager(flow_meters=flow_stubs)
+        self.thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
 
-# ike = IkeStub()
-# launch(ike)
+ike = IkeStub()
+launch(ike)

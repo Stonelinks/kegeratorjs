@@ -73,50 +73,50 @@ class TestApi(unittest.TestCase):
     def test_kegs(self):
         #post
         payload = {'beerId': 'a'}
-        id, status = self.put(host_addr + '/kegs/0',  payload)
+        id, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 400)
         #bad field
         payload = {'beerId': 5,
-                   'litersRemaining': 'a',
-                   'litersCapacity': 1.0}
-        reply, status = self.put(host_addr + '/kegs/0',  payload)
+                   'consumedL': 'a',
+                   'capacityL': 1.0}
+        reply, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 400)
         #bad field
         payload = {'beerId': 5,
-                   'litersRemaining': 0.0,
-                   'litersCapacity': 'a'}
-        reply, status = self.put(host_addr + '/kegs/0',  payload)
+                   'consumedL': 0.0,
+                   'capacityL': 'a'}
+        reply, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 400)
         #succeed:
         payload = {'beerId': 5,
-                   'litersRemaining': 0.0,
-                   'litersCapacity': 1.0}
-        reply, status = self.put(host_addr + '/kegs/0',  payload)
+                   'consumedL': 0.0,
+                   'capacityL': 1.0}
+        reply, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 200)
-        reply, status = self.get(host_addr + '/kegs/0')
-        self.assertEqual(reply.json()['data'], payload)
+        reply, status = self.get(host_addr + '/kegs/1')
+        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
 
         #put
         delta =  {'beerId': 6,
-                  'litersCapacity': 3.0}
-        reply, status = self.put(host_addr+'/kegs/0', delta)
+                  'capacityL': 3.0}
+        reply, status = self.put(host_addr+'/kegs/1', delta)
         self.assertEqual(status, 200)
 
         payload.update(delta)
 
-        reply, status = self.get(host_addr + '/kegs/0' )
+        reply, status = self.get(host_addr + '/kegs/1' )
         self.assertEqual(status, 200)
-        self.assertEqual(reply.json()['data'], payload)
+        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
 
         delta = {'beerId': 6,
-                'litersCapacity': 'b'}
-        reply, status = self.put(host_addr+'/kegs/0', delta)
+                'capacityL': 'b'}
+        reply, status = self.put(host_addr+'/kegs/1', delta)
         self.assertEqual(status, 400)
 
         delta = {'beerId': 7}
-        reply, status = self.put(host_addr+'/kegs/0', delta)
+        reply, status = self.put(host_addr+'/kegs/1', delta)
         self.assertEqual(status, 200)
-        reply, status = self.get(host_addr + '/kegs/0' )
+        reply, status = self.get(host_addr + '/kegs/1' )
         self.assertEqual(reply.json()['data']['beerId'], 7)
         self.assertEqual(status, 200)
 
