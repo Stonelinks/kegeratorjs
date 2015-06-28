@@ -9,17 +9,6 @@ class TinyDBThreadSafe(tinydb.TinyDB):
         super(TinyDBThreadSafe, self).__init__(*args, **kwargs)
         self._state_lock = threading.Lock()
 
-    #def table(self, name='_default', smart_cache=False, **options):
-    #    with self._state_lock:
-    #        return super(TinyDBThreadSafe, self).table(name, smart_cache, **options)
-
-    def tables(self):
-        with self._state_lock:
-            return super(TinyDBThreadSafe, self).tables()
-
-    def purge_tables(self):
-        with self._state_lock:
-            return super(TinyDBThreadSafe, self).purge_tables()
 
     def __getattr__(self, name, *args, **kwargs):
         with self._state_lock:
@@ -38,7 +27,7 @@ class KegManager(threading.Thread):
         self._db = TinyDBThreadSafe("kegs.json")
         self._kegs=[]
         for i,f in enumerate(flow_meters):
-            self._kegs.append(Keg(i+1, i, f.get_flow_liters, 0, logger=logger, db=self._db))
+            self._kegs.append(Keg(i, i, f.get_flow_liters, 0, logger=logger, db=self._db))
         self.start()
 
     def run(self):
@@ -91,12 +80,12 @@ class Keg():
         self._lager = logger
         self._db=db
         #database:
-        db_entry = self._db.get(eid=self._id)
+        db_entry = self._db.get(eid=self._id+1)
         if db_entry is None:
             insertId = self._db.insert(self._get_persistant_state())
             print('Inserted {}, id:{}'.format(insertId, self._id))
-            assert insertId == self._id
-            db_entry = self._db.get(eid=self._id)
+            assert insertId == self._id+1
+            db_entry = self._db.get(eid=self._id+1)
             if db_entry is None:
                 raise KeyError()
         self.set_state(db_entry)
@@ -141,7 +130,7 @@ class Keg():
                                                            'volumeL':self._this_pour_l,
                                                            'startTime': self._pour_start_time,
                                                            'stopTime': time_now})
-        self._db.update(self._get_persistant_state(), eid=self._id)
+        self._db.update(self._get_persistant_state(), eid=self._id+1)
 
 
     def _get_persistant_state(self):
@@ -161,7 +150,7 @@ class Keg():
             self._beer_id = state['beerId']
             self._consumed_l = state['consumedL']
             self._capacity_l = state['capacityL']
-            self._db.update(self._get_persistant_state(), eids=[self._id])
+            self._db.update(self._get_persistant_state(), eids=[self._id+1])
 
     def __str__(self):
         with self._state_lock:

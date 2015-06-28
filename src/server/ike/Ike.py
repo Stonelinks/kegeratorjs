@@ -23,8 +23,8 @@ class Ike:
         #thermostat
         self.tempSensor = w1thermsensor.W1ThermSensor()
         self.compressorRelay = relay.Relay(relayPin)
-        self.thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0, logger=self.logger)
-        self.thermostat.start()
+        self._thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0, logger=self.logger)
+        self._thermostat.start()
         self._kegManager.start()
         #TODO: pressure and ADC
         #self.kegPressure =
@@ -35,13 +35,13 @@ class Ike:
         api.launch(self)
         while(1):
                 print(chr(27) + "[2J")
-                print(self.thermostat)
+                print(self._thermostat)
                 print(self)
                 time.sleep(1)
 
 
     def __del__(self):
-        self.thermostat.join()
+        self._thermostat.join()
         self._kegManager.join()
         RPIO.cleanup()
 

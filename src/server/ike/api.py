@@ -48,9 +48,10 @@ class KegForm(wtforms.Form):
 
 class KegeratorForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64)])
-    kegIds = wtforms.IntegerField('kegIds', [])
-    termostat_set_temp_c = wtforms.FloatField('ike.thermostat.setTempC', [wtforms.validators.NumberRange(min=-20, max=50)])
+    kegIds = wtforms.FieldList(wtforms.IntegerField('kegIds', []))
 
+class ThermostatForm(wtforms.Form):
+    setPointDegC = wtforms.FloatField('setPointDegC', [wtforms.validators.NumberRange(min=-20, max=50)])
 
 class ResourceApi(flask.views.MethodView):
     def __init__(self, dbPath, resource_name, form_validator):
@@ -133,38 +134,51 @@ class KegApi(flask.views.MethodView):
         return flask.jsonify(ret)
 
 
+class ThermostatApi(flask.views.MethodView):
+    def get(self):
+        return flask.jsonify({'data':ikeInstance._thermostat.get_state()})
+
+    def put(self):
+        value = ikeInstance._thermostat.get_state()
+        value.update(flask.request.get_json())
+        form = ThermostatForm.from_json(value)
+        if form.validate():
+            ikeInstance._thermostat.set_state(form.data)
+            ret = ikeInstance._thermostat.get_state()
+        else:
+            raise werkzeug.exceptions.BadRequest(form.errors)
+        return flask.jsonify(ret)
+
+
 class KegeratorSettingsApi(flask.views.MethodView):
     def __init__(self):
         super(KegeratorSettingsApi, self).__init__()
         self.db = tinydb.TinyDB('kegerator.json')
-        self.resource_name = "kegerator"
         self.form_validator = KegeratorForm
         if len(self.db.all()) == 0:
             initial = {'name':'Ike',
-                       'ike.thermostat.setTempC':4.0,
-                       'kegIds': [1, 2]
+                       'kegIds': [0, 1]
                        }
             form = self.form_validator.from_json(initial)
             if form.validate():
                 self.db.insert(form.data)
+            else:
+                raise ValueError(form.errors)
     def get(self):
         # return kegerator settings data
         return flask.jsonify(self.db.all()[0])
 
     def put(self):
         # update ike.thermostat
-        value = self.db.get(eid=id)
+        value = self.db.all()[0]
         value.update(flask.request.get_json())
         form = self.form_validator.from_json(value)
         if form.validate():
-            self.db.update(form.data, eids=[id])
-            updated = self.db.get(eid=id)
-            #apply to ike.thermostat
-            ikeInstance.ike.thermostat.set_state(ike.thermostat.ThermostatState(updated['ike.thermostat.setTempC']))
+            self.db.update(form.data, eids=[1])
+            updated = self.db.all()[0]
             return flask.jsonify(updated)
         else:
-            return flask.jsonify(form.errors), 40
-
+            raise werkzeug.exceptions.BadRequest(form.errors)
 
 class SensorsApi(flask.views.MethodView):
     def get(self):
@@ -208,6 +222,7 @@ def launch(_ikeInstance):
     app.add_url_rule('%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
 
     app.add_url_rule('/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
+    app.add_url_rule('/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET','PUT'])
     app.add_url_rule('/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
     app.add_url_rule('/events/', view_func=EventApi.as_view('events'), methods=['GET'])
     app.add_url_rule('/<path:path>', 'send_static', send_static)
@@ -235,7 +250,7 @@ class IkeStub:
         flow_stubs.append(FlowStub())
         flow_stubs.append(FlowStub())
         self._kegManager = keg.KegManager(flow_meters=flow_stubs)
-        self.thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
+        self._thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
 
 ike = IkeStub()
 launch(ike)

@@ -13,7 +13,6 @@ class Event():
 
 class Lager:
     def __init__(self, event_log_path):
-        self.lastEventId = 0
         self.event_db = tinydb.TinyDB(event_log_path)
         #cache one of each of the last event types
         self.latestData = {}
@@ -24,14 +23,10 @@ class Lager:
 
     def log_event(self, type, data):
         with self._api_lock:
-            this_entry = {'id': self.lastEventId,
-                          'type': str(type),
+            this_entry = {'type': str(type),
                           'time': time.time(),
                           'data': data}
             self.latestData.update({type: this_entry})
-            #TODO: need this to be unique across runs?
-            self.lastEventId+=1
-            #TODO: need to determine when to log to file...likely need to decimate?
             self.event_db.insert(this_entry)
 
     def find_events(self, type_filter, start_time, end_time=None):

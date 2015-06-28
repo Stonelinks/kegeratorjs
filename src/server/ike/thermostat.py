@@ -74,20 +74,16 @@ class Thermostat(threading.Thread):
             print("Thermostat: error reading temp or setting output")
             print(e)
 
-    def set_state(self, state):
-        with self._state_lock:
-            state_json = state.to_json()
-            self._db.update(state_json, eids=[1])
-            self._logger.log_event(lager.Event.thermostatSettings, state_json)
-
     def get_state(self):
         with self._state_lock:
-            return ThermostatState.from_json(self._db.all()[0])
+            ret = self._db.get(eid=1)
+            ret.update(self._sense.to_json())
+            return ret
 
-    def get_sense(self):
+    def set_state(self, value):
         with self._state_lock:
-            sense = self._sense
-            return sense.deepcopy()
+            self._db.update(value, eids=[1])
+            self._logger.log_event(lager.Event.thermostatSettings, self._db.get(eid=1))
 
     def __str__(self):
         with self._state_lock:
