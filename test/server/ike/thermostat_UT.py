@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 __author__ = 'nwiles'
 import unittest
-import thermostat
-import lager
+import ike.thermostat as thermostat
+import ike.lager as lager
 
 class RelayStub:
     def __init__(self):

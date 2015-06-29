@@ -52,11 +52,12 @@ class Keg():
                  id,
                  beer_id,
                  get_flow_liters,
+                 logger,
+                 db,
                  pour_threshold_l_per_s=0.05,
                  pour_timeout_s=1.0,
-                 loop_period_s=0.1,
-                 logger=None,
-                 db=None):
+                 loop_period_s=0.1
+                 ):
         #threading
         self._state_lock = threading.Lock()
         #inputs
@@ -83,7 +84,6 @@ class Keg():
         db_entry = self._db.get(eid=self._id+1)
         if db_entry is None:
             insertId = self._db.insert(self._get_persistant_state())
-            print('Inserted {}, id:{}'.format(insertId, self._id))
             assert insertId == self._id+1
             db_entry = self._db.get(eid=self._id+1)
             if db_entry is None:
@@ -130,7 +130,7 @@ class Keg():
                                                            'volumeL':self._this_pour_l,
                                                            'startTime': self._pour_start_time,
                                                            'stopTime': time_now})
-        self._db.update(self._get_persistant_state(), eid=self._id+1)
+        self._db.update(self._get_persistant_state(), eids=[self._id+1])
 
 
     def _get_persistant_state(self):
