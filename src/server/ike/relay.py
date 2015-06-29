@@ -1,8 +1,5 @@
 __author__ = 'nwiles'
-try:
-    import RPIO
-except ImportError:
-    pass
+import RPIO
 
 class Relay:
     def __init__(self, gpioPin):

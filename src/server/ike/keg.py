@@ -2,7 +2,7 @@ __author__ = 'nwiles'
 import threading
 import tinydb
 import time
-import lager
+import ike.lager as lager
 
 class TinyDBThreadSafe(tinydb.TinyDB):
     def __init__(self, *args, **kwargs):
@@ -143,7 +143,6 @@ class Keg():
             ret = self._get_persistant_state()
             ret.update({'flowRateLitersPerSec': self._flow_rate_l_per_s})
             return ret
-
 
     def set_state(self, state):
         with self._state_lock:

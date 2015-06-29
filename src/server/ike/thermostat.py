@@ -1,8 +1,8 @@
 __author__ = 'nwiles'
 import threading
 import time
-import runningMean
-import lager
+import ike.runningMean as runningMean
+import ike.lager as lager
 import tinydb
 
 class ThermostatState:

@@ -229,28 +229,3 @@ def launch(_ikeInstance):
     app.add_url_rule('/', 'root', root)
 
     app.run(host='0.0.0.0', debug=True)
-
-def set_relay(input):
-    pass
-
-def temp_input():
-    return 4.0
-
-class FlowStub:
-    def get_flow_liters(self):
-        return True
-
-import thermostat
-import keg
-
-class IkeStub:
-    def __init__(self):
-        self.logger = ike.lager.Lager('log.temp')
-        flow_stubs = []
-        flow_stubs.append(FlowStub())
-        flow_stubs.append(FlowStub())
-        self._kegManager = keg.KegManager(flow_meters=flow_stubs)
-        self._thermostat = thermostat.Thermostat(temp_input, set_relay, False, self.logger);
-
-ike = IkeStub()
-launch(ike)
