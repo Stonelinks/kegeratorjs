@@ -16,3 +16,4 @@ tasks.xml
 build/**
 emacs.xml
 *.coverage
+*.log
