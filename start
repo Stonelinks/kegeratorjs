@@ -7,6 +7,6 @@ then
     echo "iked is already running"
 else
 	echo "launched iked"
-	nohup /home/${USER_NAME}/kegeratorjs/iked sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/server/main.py > /dev/null 2>&1&
+	nohup /home/${USER_NAME}/kegeratorjs/iked "sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/server/main.py" > /dev/null 2>&1&
 fi
 EOF

@@ -109,7 +109,7 @@ class Keg():
             if self._flow_rate_l_per_s >= self._pour_threshold_l_per_s:
                 self._is_pouring = True
                 self._time_last_pouring = time_now
-                
+
             if not self._is_pouring:
                     self._pour_start_time = time_now
 
