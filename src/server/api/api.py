@@ -7,7 +7,7 @@ import tinydb
 import werkzeug
 import ike
 
-app = flask.Flask(__name__, static_folder='../../build')
+app = flask.Flask(__name__, static_folder='../../../build')
 global ikeInstance
 
 class BeerForm(wtforms.Form):
@@ -183,7 +183,7 @@ class KegeratorSettingsApi(flask.views.MethodView):
 class SensorsApi(flask.views.MethodView):
     def get(self):
         # return kegerator sensor data
-        latest_sensors = ikeInstance.logger.find_events(ike.lager.Event.sensors, 'now')
+        latest_sensors = ikeInstance._logger.find_events(ike.lager.Event.sensors, 'now')
         return flask.jsonify(latest_sensors)
 
 
@@ -193,7 +193,7 @@ class EventApi(flask.views.MethodView):
         start = flask.request.args.get('startTime')
         end = flask.request.args.get('endTime')
         # return matching event data
-        events = ikeInstance.logger.find_events(types, start, end)
+        events = ikeInstance._logger.find_events(types, start, end)
         return flask.jsonify({'data':events})
 
 def register_api(view, endpoint, url, pk='id', pk_type='int'):

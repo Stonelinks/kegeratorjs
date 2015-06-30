@@ -78,6 +78,7 @@ class Thermostat(threading.Thread):
         with self._state_lock:
             ret = self._db.get(eid=1)
             ret.update(self._sense.to_json())
+            ret.update({'compressorOn':self._outputSetting})
             return ret
 
     def set_state(self, value):

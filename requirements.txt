@@ -8,3 +8,8 @@ tinydb==2.3.2
 Werkzeug==0.10.4
 WTForms==2.0.2
 WTForms-JSON==0.2.10
+semantic-version==2.4.1
+
+#for PI:
+#RPIO==0.10.1
+#w1thermsensor==0.2.2

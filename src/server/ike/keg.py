@@ -27,7 +27,7 @@ class KegManager(threading.Thread):
         self._db = TinyDBThreadSafe("kegs.json")
         self._kegs=[]
         for i,f in enumerate(flow_meters):
-            self._kegs.append(Keg(i, i, f.get_flow_liters, 0, logger=logger, db=self._db))
+            self._kegs.append(Keg(i, 0, f.get_flow_liters, logger=logger, db=self._db))
         self.start()
 
     def run(self):
@@ -41,11 +41,11 @@ class KegManager(threading.Thread):
         super(KegManager, self).join()
 
     def dispatch(self, id, funcName, *args, **kwargs):
-        fn = getattr(self._kegs[id], funcName)
         if id is not None:
+            fn = getattr(self._kegs[id], funcName)
             return fn(*args, **kwargs)
         else:
-            return [ret for ret in self._kegs.fn(*args, **kwargs)]
+            return [getattr(keg, funcName)(*args, **kwargs) for keg in self._kegs]
 
 class Keg():
     def __init__(self,
@@ -54,7 +54,7 @@ class Keg():
                  get_flow_liters,
                  logger,
                  db,
-                 pour_threshold_l_per_s=0.05,
+                 pour_threshold_l_per_s=0.02,
                  pour_timeout_s=1.0,
                  loop_period_s=0.1
                  ):
@@ -105,23 +105,23 @@ class Keg():
             #flow rate
             self._flow_rate_l_per_s = delta_flow / delta_t
 
+
             if self._flow_rate_l_per_s >= self._pour_threshold_l_per_s:
-                if not self._is_pouring:
-                    self._is_pouring = True
-                    self._pour_start_time = time_now
+                self._is_pouring = True
                 self._time_last_pouring = time_now
+                
+            if not self._is_pouring:
+                    self._pour_start_time = time_now
+
+            if self._is_pouring:
                 self._this_pour_l += delta_flow
                 self._consumed_l += delta_flow
-            else:
-                #reset if not flowing so that we don't count spurious ticks
-                self._flow_meter_last = flow_meter_now
-
-            if self._has_pour_stopped(time_now):
-                self._on_stop_pour(time_now)
-                self._is_pouring = False
+                if self._has_pour_stopped(time_now):
+                    self._on_stop_pour(time_now)
+                    self._is_pouring = False
 
     def _has_pour_stopped(self, time_now):
-        return (time_now - self._time_last_pouring) >= self._pour_timeout_s
+        return ((time_now - self._time_last_pouring) >= self._pour_timeout_s)
 
     def _on_stop_pour(self, time_now):
         if self._lager:
