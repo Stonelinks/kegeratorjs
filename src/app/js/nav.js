@@ -6,11 +6,16 @@ var chooseRandom = function(list) {
 };
 
 var NavView = Marionette.ItemView.extend({
-  template: require('../../tmpl/nav.hbs'),
-  
+  template: require('../tmpl/nav.hbs'),
+
   serializeData: function() {
     return {
       logoFileName: chooseRandom([
+        'airware_logo.png',
+        'airware_logo.png',
+        'airware_logo.png',
+        'airware_logo.png',
+        'airware_logo.png',
         'airwave.png',
         'unmanned_innovations.png',
         '3DR_logo_short_color.gif'
@@ -19,23 +24,28 @@ var NavView = Marionette.ItemView.extend({
         'Kegerator',
         'Kegerator',
         'Kegerator',
-        'JIRA for beer???',
+        'JIRA for beer',
         '7geese',
         'Pizza Delivery Network',
         'Payroll System'
       ])
-    }
+    };
   },
-  
+
   selectActiveButton: function() {
-    this.$el.find('.kegerator-nav a').removeClass('active');
+    var activeClass = 'btn-primary';
+    var inactiveClass = 'btn-default';
+    var navButtons = '.kegerator-nav a';
+
+    this.$el.find(navButtons).removeClass(activeClass);
     var activeButton;
     if (!window.location.hash.length) {
-      activeButton = '.kegerator-nav a:first-child'
+      activeButton = navButtons + ':first-child';
     } else {
-      activeButton = '.kegerator-nav a[href="' + window.location.hash + '"]'
+      activeButton = navButtons + '[href="' + window.location.hash + '"]';
     }
-    this.$el.find(activeButton).addClass('active');
+    this.$el.find(activeButton).addClass(activeClass);
+    this.$el.find(navButtons).not(activeButton).addClass(inactiveClass);
   }
 });
 

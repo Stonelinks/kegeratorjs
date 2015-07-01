@@ -7,8 +7,7 @@ import tinydb
 import werkzeug
 import ike
 
-app = flask.Flask(__name__, static_folder='../../../build')
-global ikeInstance
+global ike_instance
 
 class BeerForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64),
@@ -64,17 +63,25 @@ class ResourceApi(flask.views.MethodView):
         if id is None:
             # return a list of all resources
             match = self.db.all()
+            for m in match:
+                m['id'] = m.eid
         else:
             # expose a single resource
             match = self.db.get(eid=id)
             if match is None:
                 raise werkzeug.exceptions.NotFound()
-        return flask.jsonify({'data': match})
+            else:
+                match['id'] = id
+
+        return flask.jsonify(match)
 
     def post(self):
         # create a new resource
         form = self.form_validator.from_json(flask.request.get_json())
         if form.validate():
+            #TODO reject duplicate data
+            if self.checkDataDuplicate(form.data):
+                raise werkzeug.exceptions.BadRequest(flask.jsonify({"errors":"duplicate data not allowed"}))
             ret = flask.jsonify({'id':self.db.insert(form.data)})
         else:
             print(form.errors)
@@ -100,55 +107,55 @@ class ResourceApi(flask.views.MethodView):
         else:
             raise werkzeug.exceptions.BadRequest(flask.jsonify(form.errors))
 
+    def checkDataDuplicate(self, data):
+        pass
 
 class BeerApi(ResourceApi):
     def __init__(self):
         super(BeerApi, self).__init__('beers.json', 'beers', BeerForm)
 
-
 class UserApi(ResourceApi):
     def __init__(self):
         super(UserApi, self).__init__('users.json', 'users', UserForm)
 
+    def checkDataDuplicate(self, data):
+        return len(self.db.search(tinydb.where('email')==data['email']))>0
 
 class KegApi(flask.views.MethodView):
     def get(self, id):
         try:
-            ret = {'data':ikeInstance._kegManager.dispatch(id, 'get_state')}
+            return flask.jsonify(ike_instance._kegManager.dispatch(id, 'get_state'))
         except KeyError:
             raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
-        return flask.jsonify(ret)
 
     def put(self, id):
         try:
-            value = ikeInstance._kegManager.dispatch(id, 'get_state')
+            value = ike_instance._kegManager.dispatch(id, 'get_state')
             value.update(flask.request.get_json())
             form = KegForm.from_json(value)
             if form.validate():
-                ikeInstance._kegManager.dispatch(id, 'set_state', form.data)
-                ret = ikeInstance._kegManager.dispatch(id, 'get_state')
+                ike_instance._kegManager.dispatch(id, 'set_state', form.data)
+                ret = ike_instance._kegManager.dispatch(id, 'get_state')
             else:
                 raise werkzeug.exceptions.BadRequest(form.errors)
         except KeyError:
             raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
         return flask.jsonify(ret)
 
-
 class ThermostatApi(flask.views.MethodView):
     def get(self):
-        return flask.jsonify({'data':ikeInstance._thermostat.get_state()})
+        return flask.jsonify(ike_instance._thermostat.get_state())
 
     def put(self):
-        value = ikeInstance._thermostat.get_state()
+        value = ike_instance._thermostat.get_state()
         value.update(flask.request.get_json())
         form = ThermostatForm.from_json(value)
         if form.validate():
-            ikeInstance._thermostat.set_state(form.data)
-            ret = ikeInstance._thermostat.get_state()
+            ike_instance._thermostat.set_state(form.data)
+            ret = ike_instance._thermostat.get_state()
         else:
             raise werkzeug.exceptions.BadRequest(form.errors)
         return flask.jsonify(ret)
-
 
 class KegeratorSettingsApi(flask.views.MethodView):
     def __init__(self):
@@ -183,9 +190,8 @@ class KegeratorSettingsApi(flask.views.MethodView):
 class SensorsApi(flask.views.MethodView):
     def get(self):
         # return kegerator sensor data
-        latest_sensors = ikeInstance._logger.find_events(ike.lager.Event.sensors, 'now')
+        latest_sensors = ike_instance._logger.find_events(ike.lager.Event.sensors, 'now')
         return flask.jsonify(latest_sensors)
-
 
 class EventApi(flask.views.MethodView):
     def get(self):
@@ -193,10 +199,12 @@ class EventApi(flask.views.MethodView):
         start = flask.request.args.get('startTime')
         end = flask.request.args.get('endTime')
         # return matching event data
-        events = ikeInstance._logger.find_events(types, start, end)
-        return flask.jsonify({'data':events})
+        events = ike_instance._logger.find_events(types, start, end)
+        for e in events:
+            e.update({'id':e.eid})
+        return flask.jsonify(events)
 
-def register_api(view, endpoint, url, pk='id', pk_type='int'):
+def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)
     app.add_url_rule(url, defaults={pk: None},
                      view_func=view_func, methods=['GET',])
@@ -204,28 +212,36 @@ def register_api(view, endpoint, url, pk='id', pk_type='int'):
     app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
                      methods=['GET', 'PUT', 'DELETE'])
 
-def root():
-    return app.send_static_file('index.html')
-
-def send_static(path):
-    return app.send_static_file(path)
-
-def launch(_ikeInstance):
-    global ikeInstance
-    ikeInstance = _ikeInstance;
+def launch(_ike_instance, static_folder):
+    global ike_instance
+    ike_instance = _ike_instance;
     wtforms_json.init()
-    register_api(BeerApi, 'beers', '/beers/', pk='id')
-    register_api(UserApi, 'users', '/users/', pk='id')
+    
+    api_url_prefix = '/api/v1'
 
+    app = flask.Flask('ike', static_folder=static_folder)
+
+    # beer
+    register_api(app, BeerApi, 'beers', api_url_prefix + '/beers/', pk='id')
+    
+    # users
+    register_api(app, UserApi, 'users', api_url_prefix + '/users/', pk='id')
+
+    # keg
     view_func = KegApi.as_view('kegs')
-    app.add_url_rule('/kegs/', defaults={'id': None}, view_func=view_func, methods=['GET',])
-    app.add_url_rule('%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
-
-    app.add_url_rule('/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
-    app.add_url_rule('/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET','PUT'])
-    app.add_url_rule('/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
-    app.add_url_rule('/events/', view_func=EventApi.as_view('events'), methods=['GET'])
-    app.add_url_rule('/<path:path>', 'send_static', send_static)
-    app.add_url_rule('/', 'root', root)
+    app.add_url_rule(api_url_prefix + '/kegs/', defaults={'id': None}, view_func=view_func, methods=['GET',])
+    app.add_url_rule(api_url_prefix + '%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
+    
+    # sensors
+    app.add_url_rule(api_url_prefix + '/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
+    app.add_url_rule(api_url_prefix + '/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET','PUT'])
+    
+    # kegerator "core" (whateverthefuck that means)
+    app.add_url_rule(api_url_prefix + '/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
+    app.add_url_rule(api_url_prefix + '/events/', view_func=EventApi.as_view('events'), methods=['GET'])
+    
+    # serve the frontend
+    app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
+    app.add_url_rule('/<path:path>', 'send_static', lambda path: app.send_static_file(path))
 
     app.run(host='0.0.0.0', debug=True)

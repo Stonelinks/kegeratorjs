@@ -10,9 +10,7 @@ var gulp = require('gulp'),
   sourcemaps = require('gulp-sourcemaps'),
   less = require('gulp-less'),
   buffer = require('vinyl-buffer'),
-  transform = require('vinyl-transform'),
-  source = require('vinyl-source-stream'),
-  nodemon = require('gulp-nodemon');
+  source = require('vinyl-source-stream');
 
 var path = {
   tmpl: './src/app/tmpl/**/*.hbs',
@@ -73,7 +71,11 @@ gulp.task('webserver', function() {
     .pipe(webserver({
       livereload: true,
       // directoryListing: true,
-      open: true
+      open: true,
+      proxies: [{
+        source: '/api',
+        target: 'http://localhost:5000/api'
+      }]
     }));
 });
 
@@ -88,6 +90,7 @@ gulp.task('watch', ['build'], function() {
   gulp.watch(path.js, ['js']);
   gulp.watch(path.style, ['style']);
   gulp.watch(path.tmpl, ['js']);
+  gulp.watch(path.images, ['images']);
   gulp.watch(path.index, ['index']);
 });
 
