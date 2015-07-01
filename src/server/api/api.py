@@ -7,7 +7,6 @@ import tinydb
 import werkzeug
 import ike
 
-app = flask.Flask(__name__, static_folder='../../../build')
 global ikeInstance
 
 class BeerForm(wtforms.Form):
@@ -196,7 +195,7 @@ class EventApi(flask.views.MethodView):
         events = ikeInstance._logger.find_events(types, start, end)
         return flask.jsonify({'data':events})
 
-def register_api(view, endpoint, url, pk='id', pk_type='int'):
+def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)
     app.add_url_rule(url, defaults={pk: None},
                      view_func=view_func, methods=['GET',])
@@ -204,28 +203,34 @@ def register_api(view, endpoint, url, pk='id', pk_type='int'):
     app.add_url_rule('%s<%s:%s>' % (url, pk_type, pk), view_func=view_func,
                      methods=['GET', 'PUT', 'DELETE'])
 
-def root():
-    return app.send_static_file('index.html')
-
-def send_static(path):
-    return app.send_static_file(path)
-
 def launch(_ikeInstance):
     global ikeInstance
     ikeInstance = _ikeInstance;
     wtforms_json.init()
-    register_api(BeerApi, 'beers', '/beers/', pk='id')
-    register_api(UserApi, 'users', '/users/', pk='id')
 
+    app = flask.Flask('ike', static_folder='../../../build')
+
+    # beer
+    register_api(app, BeerApi, 'beers', '/beers/', pk='id')
+    
+    # users
+    register_api(app, UserApi, 'users', '/users/', pk='id')
+
+    # keg
     view_func = KegApi.as_view('kegs')
     app.add_url_rule('/kegs/', defaults={'id': None}, view_func=view_func, methods=['GET',])
     app.add_url_rule('%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
-
+    
+    # sensors
     app.add_url_rule('/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
     app.add_url_rule('/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET','PUT'])
+    
+    # kegerator "core" (whateverthefuck that means)
     app.add_url_rule('/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
     app.add_url_rule('/events/', view_func=EventApi.as_view('events'), methods=['GET'])
-    app.add_url_rule('/<path:path>', 'send_static', send_static)
-    app.add_url_rule('/', 'root', root)
+    
+    # serve the frontend
+    app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
+    app.add_url_rule('/<path:path>', 'send_static', lambda path: app.send_static_file(path))
 
     app.run(host='0.0.0.0', debug=True)

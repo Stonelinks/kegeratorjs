@@ -8,10 +8,11 @@ if mock:
 else:
     import ike.ike as ike
 
-def main():
-    my_ike = ike.Ike(relayPin=17, flow1Pin=23, flow2Pin=24)
-    api.launch(my_ike)
+sensors = {
+    'relayPin': 17,
+    'flow1Pin': 23,
+    'flow2Pin': 24
+}
 
-if __name__ == "__main__":
-    main()
-
+my_ike = ike.Ike(**sensors)
+api.launch(my_ike)
