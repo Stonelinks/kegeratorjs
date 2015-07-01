@@ -14,5 +14,7 @@ sensors = {
     'flow2Pin': 24
 }
 
+static_folder='../../../build'
+
 my_ike = ike.Ike(**sensors)
-api.launch(my_ike)
+api.launch(my_ike, static_folder)
