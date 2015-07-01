@@ -14,7 +14,7 @@ class BeerForm(wtforms.Form):
                                         wtforms.validators.DataRequired()])
     description = wtforms.StringField('description', [wtforms.validators.Length(max=1024),
                                                       wtforms.validators.DataRequired()])
-    brewed_by = wtforms.StringField('brewedBy', [wtforms.validators.Length(max=64),
+    brewedBy = wtforms.StringField('brewedBy', [wtforms.validators.Length(max=64),
                                                 wtforms.validators.DataRequired()])
     style = wtforms.StringField('style', [wtforms.validators.Length(max=64),
                                           wtforms.validators.DataRequired()])
@@ -22,7 +22,7 @@ class BeerForm(wtforms.Form):
     rating = wtforms.FloatField('rating', [wtforms.validators.NumberRange(min=0, max=100)])
     ibu = wtforms.FloatField('ibu', [wtforms.validators.NumberRange(min=0, max=300)])
     srm = wtforms.FloatField('srm', [wtforms.validators.NumberRange(min=0, max=100)])
-    cost_per_pint = wtforms.FloatField('costPerPint')
+    costPerPint = wtforms.FloatField('costPerPint')
     #TODO: date on tap
     #TODO finished
     #TODO: list of ratings?
@@ -32,25 +32,25 @@ class UserForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=25),
                                  wtforms.validators.DataRequired()])
     email = wtforms.StringField('email', [wtforms.validators.Email()])
-    rfid_id = wtforms.StringField('rfidId', [wtforms.validators.Length(max=35)])
-    nfc_id = wtforms.StringField('nfcId', [wtforms.validators.Length(max=35)])
-    untapped_name = wtforms.StringField('untappedName', [wtforms.validators.Length(max=35)])
+    rfidId = wtforms.StringField('rfidId', [wtforms.validators.Length(max=35)])
+    nfcId = wtforms.StringField('nfcId', [wtforms.validators.Length(max=35)])
+    untappedName = wtforms.StringField('untappedName', [wtforms.validators.Length(max=35)])
     #TODO: list of pour ids?
 
 
 class KegForm(wtforms.Form):
-    beer_id = wtforms.IntegerField('beerId', [wtforms.validators.DataRequired()])
-    consumed_L = wtforms.FloatField('consumedL', [])
-    capacity_L = wtforms.FloatField('capacityL', [wtforms.validators.DataRequired()])
+    beerId = wtforms.IntegerField('beerId', [wtforms.validators.DataRequired()])
+    consumedL = wtforms.FloatField('consumedL', [])
+    capacityL = wtforms.FloatField('capacityL', [wtforms.validators.DataRequired()])
     #TODO: validate litersRemaining < litersCapacity
 
 
 class KegeratorForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64)])
-    keg_ids = wtforms.FieldList(wtforms.IntegerField('kegIds', []))
+    kegIds = wtforms.FieldList(wtforms.IntegerField('kegIds', []))
 
 class ThermostatForm(wtforms.Form):
-    set_point_deg_C = wtforms.FloatField('setPointDegC', [wtforms.validators.NumberRange(min=-20, max=50)])
+    setPointDegC = wtforms.FloatField('setPointDegC', [wtforms.validators.NumberRange(min=-20, max=50)])
 
 class ResourceApi(flask.views.MethodView):
     def __init__(self, dbPath, resource_name, form_validator):
@@ -63,17 +63,25 @@ class ResourceApi(flask.views.MethodView):
         if id is None:
             # return a list of all resources
             match = self.db.all()
+            for m in match:
+                m['id'] = m.eid
         else:
             # expose a single resource
             match = self.db.get(eid=id)
             if match is None:
                 raise werkzeug.exceptions.NotFound()
+            else:
+                match['id'] = id
+
         return flask.jsonify(match)
 
     def post(self):
         # create a new resource
         form = self.form_validator.from_json(flask.request.get_json())
         if form.validate():
+            #TODO reject duplicate data
+            if self.checkDataDuplicate(form.data):
+                raise werkzeug.exceptions.BadRequest(flask.jsonify({"errors":"duplicate data not allowed"}))
             ret = flask.jsonify({'id':self.db.insert(form.data)})
         else:
             print(form.errors)
@@ -99,6 +107,9 @@ class ResourceApi(flask.views.MethodView):
         else:
             raise werkzeug.exceptions.BadRequest(flask.jsonify(form.errors))
 
+    def checkDataDuplicate(self, data):
+        pass
+
 class BeerApi(ResourceApi):
     def __init__(self):
         super(BeerApi, self).__init__('beers.json', 'beers', BeerForm)
@@ -106,6 +117,9 @@ class BeerApi(ResourceApi):
 class UserApi(ResourceApi):
     def __init__(self):
         super(UserApi, self).__init__('users.json', 'users', UserForm)
+
+    def checkDataDuplicate(self, data):
+        return len(self.db.search(tinydb.where('email')==data['email']))>0
 
 class KegApi(flask.views.MethodView):
     def get(self, id):
@@ -186,6 +200,8 @@ class EventApi(flask.views.MethodView):
         end = flask.request.args.get('endTime')
         # return matching event data
         events = ike_instance._logger.find_events(types, start, end)
+        for e in events:
+            e.update({'id':e.eid})
         return flask.jsonify(events)
 
 def register_api(app, view, endpoint, url, pk='id', pk_type='int'):

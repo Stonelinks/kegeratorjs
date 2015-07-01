@@ -43,7 +43,8 @@ class KegManager(threading.Thread):
     def dispatch(self, id, funcName, *args, **kwargs):
         if id is not None:
             fn = getattr(self._kegs[id], funcName)
-            return fn(*args, **kwargs)
+            ret = fn(*args, **kwargs)
+            return ret
         else:
             return [getattr(keg, funcName)(*args, **kwargs) for keg in self._kegs]
 
@@ -142,6 +143,7 @@ class Keg():
         with self._state_lock:
             ret = self._get_persistant_state()
             ret.update({'flowRateLitersPerSec': self._flow_rate_l_per_s})
+            ret.update({'id':self._id})
             return ret
 
     def set_state(self, state):
