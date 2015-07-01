@@ -5,8 +5,6 @@ Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
 require('bootstrap');
 
-var Nav = require('./nav');
-
 var app = new Marionette.Application();
 window.app = app;
 
@@ -16,6 +14,7 @@ app.addRegions({
 });
 
 // set up nav
+var Nav = require('./nav');
 var nav = new Nav();
 app.addInitializer(function(opts) {
   app.getRegion('nav').show(nav);
@@ -24,23 +23,23 @@ app.addInitializer(function(opts) {
 
 // main pages
 var createInstanceAndShowView = function(View) {
-  app.getRegion('content').show(new View());
-};
-
-var createDummyView = function(msg) {
   return function() {
-    createInstanceAndShowView(Marionette.ItemView.extend({
-      template: function() {
-        console.log(msg);
-        return '<h1>' + msg + '</h1>';
-      }
-    }));
+    app.getRegion('content').show(new View());
   }
 };
 
+var createDummyView = function(msg) {
+  return createInstanceAndShowView(Marionette.ItemView.extend({
+    template: function() {
+      console.log(msg);
+      return '<center><h1>' + msg + '</h1></center>';
+    }
+  }));
+};
+
 var pages = {
-  dashboard: createDummyView('I\'m the dashboard page'),
-  beers: createDummyView('I\'m the beers page'),
+  dashboard: createDummyView('Nothing here yet'),
+  beers: createInstanceAndShowView(require('./beer/BeersPage')),
   sensors: createDummyView('I\'m the sensor page'),
   settings: createDummyView('I\'m the settings page')
 };
