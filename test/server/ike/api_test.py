@@ -4,7 +4,7 @@ import unittest
 import requests
 import json
 
-host_addr = 'http://localhost:5000'
+host_addr = 'http://localhost:5000/api/v1'
 
 class TestApi(unittest.TestCase):
     def post(self, url, payload):
@@ -51,6 +51,7 @@ class TestApi(unittest.TestCase):
         id, status = self.post(host_addr + '/beers/',  payload)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))
+        payload['id'] = id
         self.assertEqual(reply.json()['data'], payload)
 
         #put
@@ -123,16 +124,17 @@ class TestApi(unittest.TestCase):
 
     def test_users(self):
         #succeed:
-        payload = {'name': 'Nic',
-                   'email': 'nhwiles@gmail.com',
-                   'rfidId': '1',
-                   'nfcId':'',
+        payload = { 'name': 'Nic',
+                    'email': 'nhwiles@gmail.com',
+                    'nfcId':'',
                     'rfidId':'',
                     'untappedName':''}
         id, status = self.post(host_addr + '/users/',  payload)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/users/' + str(id))
-        self.assertEqual(reply.json()['data'], payload)
+        self.assertEqual(status, 200)
+        payload['id'] = id
+        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
 
         #put
         delta =  {'name': 'Nic W'}
