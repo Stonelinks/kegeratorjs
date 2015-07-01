@@ -90,6 +90,7 @@ gulp.task('watch', ['build'], function() {
   gulp.watch(path.js, ['js']);
   gulp.watch(path.style, ['style']);
   gulp.watch(path.tmpl, ['js']);
+  gulp.watch(path.images, ['images']);
   gulp.watch(path.index, ['index']);
 });
 
