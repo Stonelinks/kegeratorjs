@@ -13,7 +13,6 @@ workspace.xml
 tasks.xml
 
 #build output
-build/**
 emacs.xml
 *.coverage
 *.log
