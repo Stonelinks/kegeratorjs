@@ -7,12 +7,13 @@ import RPIO
 import w1thermsensor
 import semantic_version as sv
 import time
+import os.path
 import config
 
 class Ike:
     def __init__(self):
         self.version=sv.Version('0.0.1')
-        self._logger = lager.Lager('events.json')
+        self._logger = lager.Lager(os.path.join(config.DB_ROOT, 'events.json'))
         #kegs and flow
         self._flowMeters = []
         self._flowMeters.append( sf800.SF800(config.FLOW_1_PIN) )

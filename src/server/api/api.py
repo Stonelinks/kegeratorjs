@@ -6,6 +6,7 @@ import wtforms_json
 import tinydb
 import werkzeug
 import ike
+import os.path
 import config
 
 global ike_instance
@@ -113,11 +114,11 @@ class ResourceApi(flask.views.MethodView):
 
 class BeerApi(ResourceApi):
     def __init__(self):
-        super(BeerApi, self).__init__('beers.json', 'beers', BeerForm)
+        super(BeerApi, self).__init__(os.path.join(config.DB_ROOT, 'beers.json'), 'beers', BeerForm)
 
 class UserApi(ResourceApi):
     def __init__(self):
-        super(UserApi, self).__init__('users.json', 'users', UserForm)
+        super(UserApi, self).__init__(os.path.join(config.DB_ROOT, 'users.json'), 'users', UserForm)
 
     def checkDataDuplicate(self, data):
         return len(self.db.search(tinydb.where('email') == data['email']))>0
@@ -161,7 +162,7 @@ class ThermostatApi(flask.views.MethodView):
 class KegeratorSettingsApi(flask.views.MethodView):
     def __init__(self):
         super(KegeratorSettingsApi, self).__init__()
-        self.db = tinydb.TinyDB('kegerator.json')
+        self.db = tinydb.TinyDB(os.path.join(config.DB_ROOT, 'kegerator.json'))
         self.form_validator = KegeratorForm
         if len(self.db.all()) == 0:
             initial = {'name':'Ike',
