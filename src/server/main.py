@@ -8,13 +8,5 @@ if mock:
 else:
     import ike.ike as ike
 
-sensors = {
-    'relayPin': 17,
-    'flow1Pin': 23,
-    'flow2Pin': 24
-}
-
-static_folder='../../../build'
-
-my_ike = ike.Ike(**sensors)
-api.launch(my_ike, static_folder)
+my_ike = ike.Ike()
+api.launch(my_ike)
