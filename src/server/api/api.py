@@ -49,8 +49,12 @@ class KegeratorForm(wtforms.Form):
     name = wtforms.StringField('name', [wtforms.validators.Length(max=64)])
     kegIds = wtforms.FieldList(wtforms.IntegerField('kegIds', []))
 
+
 class ThermostatForm(wtforms.Form):
     setPointDegC = wtforms.FloatField('setPointDegC', [wtforms.validators.NumberRange(min=-20, max=50)])
+    deadBandDegC = wtforms.FloatField('deadBandDegC', [wtforms.validators.NumberRange(min=0, max=10)])
+    onAddsHeat = wtforms.BoolField('onAddsHeat')
+
 
 class ResourceApi(flask.views.MethodView):
     def __init__(self, dbPath, resource_name, form_validator):
