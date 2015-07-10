@@ -6,6 +6,7 @@ Javascript kegerator
   - Deploy using ```./deploy```
   - Manage server using ```./start``` ```./stop``` and ```./restart```
   - To copy your public key to the remote server so you don't have to type a password you can run ```./copyKey``` 
+  - To run tests locally use ```./unitTest``` (be sure to resolve dependencies first)
  
 
 ##MODELS##

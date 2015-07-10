@@ -1,12 +1,21 @@
-__author__ = 'nwiles'
 #!/usr/bin/env python
+__author__ = 'nwiles'
 import unittest
 import requests
 import json
+import subprocess
+import time
 
 host_addr = 'http://localhost:5000/api/v1'
 
 class TestApi(unittest.TestCase):
+    def setUp(self):
+        self.apiProc = subprocess.Popen('./src/server/main.py')
+        time.sleep(0.5)
+
+    def tearDown(self):
+        self.apiProc.terminate()
+
     def post(self, url, payload):
         header = {'Content-type': 'application/json'}
         r = requests.post(url, data=json.dumps(payload), headers=header)
@@ -200,4 +209,3 @@ class TestApi(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
