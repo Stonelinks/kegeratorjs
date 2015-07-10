@@ -22,7 +22,7 @@ class TestThermostat(unittest.TestCase):
         inputs = thermostat.ThermostatState(set_point_deg_c=1, dead_band_deg_c=2, on_adds_heat=False)
         current_temp = Float(inputs.set_point_deg_c+inputs.dead_band_deg_c+0.1)
         uut = thermostat.Thermostat(current_temp, relay, False, lager.Lager('log.temp'))
-        uut.set_state(inputs)
+        uut.set_state(inputs.to_json())
         self.assertEqual(relay.is_on, False)
         uut.loop()
         self.assertEqual(relay.is_on, True)

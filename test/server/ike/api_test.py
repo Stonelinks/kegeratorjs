@@ -1,12 +1,21 @@
-__author__ = 'nwiles'
 #!/usr/bin/env python
+__author__ = 'nwiles'
 import unittest
 import requests
 import json
+import subprocess
+import time
 
 host_addr = 'http://localhost:5000/api/v1'
 
 class TestApi(unittest.TestCase):
+    def setUp(self):
+        self.apiProc = subprocess.Popen('./src/server/main.py')
+        time.sleep(0.5)
+
+    def tearDown(self):
+        self.apiProc.terminate()
+
     def post(self, url, payload):
         header = {'Content-type': 'application/json'}
         r = requests.post(url, data=json.dumps(payload), headers=header)
@@ -30,7 +39,11 @@ class TestApi(unittest.TestCase):
 
     def get(self, url):
         r = requests.get(url)
-        return r, r.status_code
+        try:
+            reply = r.json()
+        except:
+            reply = {}
+        return reply, r.status_code
 
     def delete(self, url):
         header = {'Content-type': 'application/json'}
@@ -52,7 +65,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))
         payload['id'] = id
-        self.assertEqual(reply.json()['data'], payload)
+        self.assertEqual(reply, payload)
 
         #put
         delta =  {'name': 'Nic W'}
@@ -60,7 +73,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))
         self.assertEqual(status, 200)
-        self.assertEqual(reply.json()['data']['name'], 'Nic W')
+        self.assertEqual(reply['name'], 'Nic W')
 
         #delete
         status = self.delete(host_addr+'/beers/'+ str(id))
@@ -95,7 +108,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/kegs/1')
-        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
 
         #put
         delta =  {'beerId': 6,
@@ -107,7 +120,7 @@ class TestApi(unittest.TestCase):
 
         reply, status = self.get(host_addr + '/kegs/1' )
         self.assertEqual(status, 200)
-        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
 
         delta = {'beerId': 6,
                 'capacityL': 'b'}
@@ -118,7 +131,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.put(host_addr+'/kegs/1', delta)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/kegs/1' )
-        self.assertEqual(reply.json()['data']['beerId'], 7)
+        self.assertEqual(reply['beerId'], 7)
         self.assertEqual(status, 200)
 
 
@@ -134,7 +147,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.get(host_addr + '/users/' + str(id))
         self.assertEqual(status, 200)
         payload['id'] = id
-        self.assertEqual(set(payload.items()).issubset( set(reply.json()['data'].items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
 
         #put
         delta =  {'name': 'Nic W'}
@@ -142,7 +155,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/users/' + str(id))
         self.assertEqual(status, 200)
-        self.assertEqual(reply.json()['data']['name'], 'Nic W')
+        self.assertEqual(reply['name'], 'Nic W')
 
         #delete
         status = self.delete(host_addr+'/users/'+ str(id))
@@ -152,6 +165,47 @@ class TestApi(unittest.TestCase):
         status = self.delete(host_addr+'/users/'+ str(id))
         self.assertEqual(status, 404)
 
+    def test_thermostat(self):
+        #put should succeed:
+        payload = { "setPointDegC": 2.0,
+                    "deadBandDegC": 1.0,
+                    "onAddsHeat": True}
+        reply, status = self.put(host_addr + '/thermostat/',  payload)
+        self.assertEqual(status, 200)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+
+        #change set point:
+        payload["setPointDegC"] = 0.0
+        reply, status = self.put(host_addr + '/thermostat/',  payload)
+        self.assertEqual(status, 200)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+
+        #change deadband:
+        payload["deadBandDegC"]= 2.0
+        reply, status = self.put(host_addr + '/thermostat/',  payload)
+        self.assertEqual(status, 200)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+
+        #change on adds heat:
+        payload["onAddsHeat"]= False
+        reply, status = self.put(host_addr + '/thermostat/',  payload)
+        self.assertEqual(status, 200)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+
+        #GET==PUT
+        reply, status = self.get(host_addr + '/thermostat/')
+        self.assertEqual(status, 200)
+        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+
+
+        #post should fail
+        reply, status = self.post(host_addr+'/thermostat/', payload)
+        self.assertEqual(status, 405)
+
+        #delete should fail
+        status = self.delete(host_addr+'/thermostat/')
+        self.assertEqual(status, 405)
+
+
 if __name__ == '__main__':
     unittest.main()
-
