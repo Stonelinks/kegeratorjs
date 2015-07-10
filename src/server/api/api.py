@@ -53,7 +53,7 @@ class KegeratorForm(wtforms.Form):
 class ThermostatForm(wtforms.Form):
     setPointDegC = wtforms.FloatField('setPointDegC', [wtforms.validators.NumberRange(min=-20, max=50)])
     deadBandDegC = wtforms.FloatField('deadBandDegC', [wtforms.validators.NumberRange(min=0, max=10)])
-    onAddsHeat = wtforms.BoolField('onAddsHeat')
+    onAddsHeat = wtforms.BooleanField('onAddsHeat')
 
 
 class ResourceApi(flask.views.MethodView):
