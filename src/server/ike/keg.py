@@ -3,6 +3,8 @@ import threading
 import tinydb
 import time
 import ike.lager as lager
+import os.path
+import config
 
 class TinyDBThreadSafe(tinydb.TinyDB):
     def __init__(self, *args, **kwargs):
@@ -24,7 +26,7 @@ class KegManager(threading.Thread):
         self._stop_event = threading.Event()
         #configurable
         self._loop_period_s = loop_period_s
-        self._db = TinyDBThreadSafe("kegs.json")
+        self._db = TinyDBThreadSafe(os.path.join(config.DB_ROOT, "kegs.json"))
         self._kegs=[]
         for i,f in enumerate(flow_meters):
             self._kegs.append(Keg(i, 0, f.get_flow_liters, logger=logger, db=self._db))

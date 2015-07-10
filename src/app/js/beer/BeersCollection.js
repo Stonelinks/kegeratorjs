@@ -5,8 +5,8 @@ var BeerModel = BaseModel.extend();
 
 module.exports = Backbone.Collection.extend({
   model: BeerModel,
-  
+
   url: function() {
-    return BaseModel.prototype.urlRoot + '/beers/'
+    return BaseModel.prototype.urlRoot + '/beers/';
   }
 });

@@ -22,24 +22,28 @@ app.addInitializer(function(opts) {
 });
 
 // main pages
-var createInstanceAndShowView = function(View) {
+var showView = function(viewWrapperFunc) {
   return function() {
-    app.getRegion('content').show(new View());
+    var viewPort = app.getRegion('content');
+    viewWrapperFunc(viewPort);
   }
 };
 
 var createDummyView = function(msg) {
-  return createInstanceAndShowView(Marionette.ItemView.extend({
+  var DummyView = Marionette.ItemView.extend({
     template: function() {
       console.log(msg);
       return '<center><h1>' + msg + '</h1></center>';
     }
-  }));
+  });
+  return showView(function(viewPort) {
+    viewPort.show(new DummyView());
+  });
 };
 
 var pages = {
   dashboard: createDummyView('Nothing here yet'),
-  beers: createInstanceAndShowView(require('./beer/BeersPage')),
+  beers: showView(require('./beer/BeersPage')),
   sensors: createDummyView('I\'m the sensor page'),
   settings: createDummyView('I\'m the settings page')
 };

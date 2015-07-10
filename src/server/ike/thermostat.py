@@ -4,6 +4,8 @@ import time
 import ike.runningMean as runningMean
 import ike.lager as lager
 import tinydb
+import os.path
+import config
 
 class ThermostatState:
     def __init__(self, set_point_deg_c=0, dead_band_deg_c=0, on_adds_heat=False):
@@ -35,7 +37,7 @@ class Thermostat(threading.Thread):
     def __init__(self, temp_input_fn, relay, on_adds_heat, logger):
         threading.Thread.__init__(self, name="Thermostat")
         self._logger = logger
-        self._db = tinydb.TinyDB("thermostat.json")
+        self._db = tinydb.TinyDB(os.path.join(config.DB_ROOT, "thermostat.json"))
         if len(self._db.all()) is 0:
             initial_state = ThermostatState(set_point_deg_c=2.5, dead_band_deg_c=2, on_adds_heat=on_adds_heat)
             self._db.insert(initial_state.to_json())

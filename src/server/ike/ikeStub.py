@@ -2,6 +2,8 @@ __author__ = 'nwiles'
 import ike.thermostat as thermostat
 import ike.keg as keg
 import ike.lager as lager
+import os.path
+import config
 
 def set_relay(input):
     pass
@@ -14,8 +16,8 @@ class FlowStub:
         return True
 
 class Ike:
-    def __init__(self, relayPin, flow1Pin, flow2Pin):
-        self._logger = lager.Lager('events.json')
+    def __init__(self):
+        self._logger = lager.Lager(os.path.join(config.DB_ROOT, 'events.json'))
         flow_stubs = []
         flow_stubs.append(FlowStub())
         flow_stubs.append(FlowStub())
