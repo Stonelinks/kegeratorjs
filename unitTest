@@ -1,7 +1,8 @@
 #!/bin/bash
 source environment
-export PYTHONPATH=${PYTHONPATH}:/Users/nwiles/Documents/kegeratorjs/src/server/
-./test/server/ike/api_test.py && \
+REPO_DIR=`dirname "$(readlink "$0")"`
+export PYTHONPATH=${PYTHONPATH}:${REPO_DIR}/src/server/
 ./test/server/ike/keg_test.py && \
 ./test/server/ike/lager_UT.py && \
-./test/server/ike/thermostat_UT.py
+./test/server/ike/thermostat_UT.py && \
+./test/server/ike/api_test.py
