@@ -15,3 +15,4 @@ tasks.xml
 emacs.xml
 *.coverage
 *.log
+*.egg*
