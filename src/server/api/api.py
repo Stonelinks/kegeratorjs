@@ -78,8 +78,8 @@ class ResourceApi(flask.views.MethodView):
                 raise werkzeug.exceptions.NotFound()
             else:
                 match['id'] = id
-
-        return flask.jsonify(match)
+        
+        return flask.jsonify({'data': match})
 
     def post(self):
         # create a new resource
@@ -130,7 +130,7 @@ class UserApi(ResourceApi):
 class KegApi(flask.views.MethodView):
     def get(self, id):
         try:
-            return flask.jsonify(ike_instance._kegManager.dispatch(id, 'get_state'))
+            return flask.jsonify({'data': ike_instance._kegManager.dispatch(id, 'get_state')})
         except KeyError:
             raise werkzeug.exceptions.NotFound({'error' : '{} is not a valid keg id'.format(id)})
 
@@ -150,7 +150,7 @@ class KegApi(flask.views.MethodView):
 
 class ThermostatApi(flask.views.MethodView):
     def get(self):
-        return flask.jsonify(ike_instance._thermostat.get_state())
+        return flask.jsonify({'data': ike_instance._thermostat.get_state()})
 
     def put(self):
         value = ike_instance._thermostat.get_state()
@@ -208,7 +208,7 @@ class EventApi(flask.views.MethodView):
         events = ike_instance._logger.find_events(types, start, end)
         for e in events:
             e.update({'id':e.eid})
-        return flask.jsonify(events)
+        return flask.jsonify({'data': events})
 
 def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)

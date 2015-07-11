@@ -2,23 +2,23 @@ var Marionette = require('backbone.marionette');
 
 var BeersCollection = require('./BeersCollection');
 
-var BeerView = Marionette.ItemView.extend({
-  template: function() {
-    return '<center><h1>Some shit about beer:</h1></center><pre>' + '' + '</pre>';
-  },
+var TableView = require('../views/table');
 
-  initialize: function() {
-    debugger;
-  }
+var BeerView = Marionette.ItemView.extend({
+  template: require('../../tmpl/beer.hbs')
 });
 
+var BeersView = Marionette.CollectionView.extend({
+  childView: BeerView
+});
 
 module.exports = function(viewPort) {
   var beerCollection = new BeersCollection();
-  beerCollection.fetch().then(function() {
-    debugger;
-    viewPort.show(new BeerView({
-      collection: beerCollection
-    }));
-  });
+  beerCollection
+    .fetch()
+    .then(function() {
+      viewPort.show(new TableView({
+        collection: beerCollection
+      }));
+    });
 };
