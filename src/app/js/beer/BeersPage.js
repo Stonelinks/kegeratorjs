@@ -3,21 +3,19 @@ var Marionette = require('backbone.marionette');
 var BeersCollection = require('./BeersCollection');
 
 var TableView = require('../views/table');
+var RowView = require('../views/row');
 
-var BeerView = Marionette.ItemView.extend({
-  template: require('../../tmpl/beer.hbs')
-});
-
-var BeersView = Marionette.CollectionView.extend({
-  childView: BeerView
-});
+var BeerPage = RowView.extend({
+  childView: TableView
+})
 
 module.exports = function(viewPort) {
   var beerCollection = new BeersCollection();
   beerCollection
     .fetch()
     .then(function() {
-      viewPort.show(new TableView({
+
+      viewPort.show(new BeerPage({
         collection: beerCollection
       }));
     });

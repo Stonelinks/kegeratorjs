@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var RowView = Marionette.ItemView.extend({
+var TableRowView = Marionette.ItemView.extend({
   tagName: "tr",
   
   template: require('../../tmpl/tablerow.hbs'),
@@ -18,7 +18,7 @@ var RowView = Marionette.ItemView.extend({
 });
 
 module.exports = Marionette.CompositeView.extend({
-  childView: RowView,
+  childView: TableRowView,
 
   childViewContainer: "tbody",
 
@@ -29,6 +29,9 @@ module.exports = Marionette.CompositeView.extend({
     var sortedModelKeys = this.collection && this.collection.at(0) ? this.collection.at(0).keys().sort() : []
       
     return {
+      sortedModelKeysUpperCase: sortedModelKeys.map(function(key) {
+        return key.toUpperCase();
+      }),
       sortedModelKeys: sortedModelKeys
     };
   }
