@@ -43,7 +43,7 @@ var createDummyView = function(msg) {
 
 var pages = {
   dashboard: createDummyView('Nothing here yet'),
-  beers: showView(require('./beer/BeersPage')),
+  beers: showView(require('./BeerPage')),
   sensors: createDummyView('I\'m the sensor page'),
   settings: createDummyView('I\'m the settings page')
 };
