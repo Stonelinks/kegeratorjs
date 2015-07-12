@@ -1,16 +1,9 @@
 var BaseModel = require('../BaseModel');
-var Backbone = require('backbone');
+var BaseCollection = require('../BaseCollection');
 
 var BeerModel = BaseModel.extend();
 
-module.exports = Backbone.Collection.extend({
+module.exports =  BaseCollection.extend({
   model: BeerModel,
-
-  parse: function(data) {
-    return data.data;
-  },
-
-  url: function() {
-    return BaseModel.prototype.urlRoot + '/beers/';
-  }
+  endPoint: 'beers'
 });
