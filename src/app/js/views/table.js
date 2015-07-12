@@ -11,10 +11,12 @@ var templateHelpers = function() {
     modelKeys = model.keys().sort();
   }
 
+  var columnNames = Marionette.getOption(this, 'columnNames');
+
   return {
     modelKeys: modelKeys,
-    modelKeysUpperCase: modelKeys.map(function(key) {
-      return key.toUpperCase();
+    columnNames: modelKeys.map(function(key) {
+      return columnNames && columnNames[key] ? columnNames[key] : key.toUpperCase();
     })
   };
 };
@@ -46,7 +48,8 @@ module.exports = Marionette.CompositeView.extend({
 
   childViewOptions: function() {
     return {
-      modelKeys: Marionette.getOption(this, 'modelKeys')
+      modelKeys: Marionette.getOption(this, 'modelKeys'),
+      columnNames: Marionette.getOption(this, 'columnNames')
     };
   }
 });
