@@ -1,38 +1,52 @@
 var Marionette = require('backbone.marionette');
+var _ = require('underscore');
+
+var templateHelpers = function() {
+
+  var modelKeys = [];
+  if (Marionette.getOption(this, 'modelKeys')) {
+    modelKeys = Marionette.getOption(this, 'modelKeys');
+  } else if (this.model || (this.collection && this.collection.at(0))) {
+    var model = this.model ? this.model : this.collection.at(0);
+    modelKeys = model.keys().sort();
+  }
+
+  return {
+    modelKeys: modelKeys,
+    modelKeysUpperCase: modelKeys.map(function(key) {
+      return key.toUpperCase();
+    })
+  };
+};
 
 var TableRowView = Marionette.ItemView.extend({
-  tagName: "tr",
-  
+  tagName: 'tr',
+
   template: require('../../tmpl/tablerow.hbs'),
-  
+
   templateHelpers: function() {
-    var sortedModelKeys = this.model.keys().sort()
-    var sortedModelValues = sortedModelKeys.map(function(key) {
-      return this.model.get(key)
-    }.bind(this))
-    return {
+    var helpers = templateHelpers.call(this);
+    return _.extend(helpers, {
       model: this.model,
-      sortedModelValues: sortedModelValues
-    };
+      modelValues: helpers.modelKeys.map(function(key) {
+        return this.model.get(key);
+      }.bind(this))
+    });
   }
 });
 
 module.exports = Marionette.CompositeView.extend({
   childView: TableRowView,
 
-  childViewContainer: "tbody",
+  childViewContainer: 'tbody',
 
   template: require('../../tmpl/table.hbs'),
-  
-  templateHelpers: function() {
-    
-    var sortedModelKeys = this.collection && this.collection.at(0) ? this.collection.at(0).keys().sort() : []
-      
+
+  templateHelpers: templateHelpers,
+
+  childViewOptions: function() {
     return {
-      sortedModelKeysUpperCase: sortedModelKeys.map(function(key) {
-        return key.toUpperCase();
-      }),
-      sortedModelKeys: sortedModelKeys
+      modelKeys: Marionette.getOption(this, 'modelKeys')
     };
   }
 });

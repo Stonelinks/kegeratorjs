@@ -1,19 +1,21 @@
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      {{#each sortedModelKeysUpperCase}}
-        <th>{{this}}</th>
-      {{/each}}
-    </tr>
-  </thead>
+<div class="col-sm-12">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        {{#each modelKeysUpperCase}}
+          <th>{{this}}</th>
+        {{/each}}
+      </tr>
+    </thead>
 
-  <tbody></tbody>
+    <tbody></tbody>
 
-<!--
-  <tfoot>
-    <tr>
-      <td colspan="3">some footer information</td>
-    </tr>
-  </tfoot>
--->
-</table>
+  <!--
+    <tfoot>
+      <tr>
+        <td colspan="3">some footer information</td>
+      </tr>
+    </tfoot>
+  -->
+  </table>
+</div>
