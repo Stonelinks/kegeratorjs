@@ -14,6 +14,7 @@ var templateHelpers = function() {
   var columnNames = Marionette.getOption(this, 'columnNames');
 
   return {
+    title: Marionette.getOption(this, 'title'),
     modelKeys: modelKeys,
     columnNames: modelKeys.map(function(key) {
       return columnNames && columnNames[key] ? columnNames[key] : key.toUpperCase();
