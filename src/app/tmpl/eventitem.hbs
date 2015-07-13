@@ -1,7 +1,14 @@
-<div class="col-sm-12">
-<h2>{{eventType}}</h2>
+<div class="row">
+  <div class="col-sm-6">
+    
+    <h2>{{eventType}}</h2>
+    <small>{{time}} ({{timeFromNow}})</small>
 
-<pre>
-{{dataJSON}}
-</pre>
+  </div>
+  <div class="col-sm-6">
+    
+    <pre>{{dataJSON}}</pre>
+
+  </div>
 </div>
+<hr/>

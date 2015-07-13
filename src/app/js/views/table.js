@@ -10,6 +10,7 @@ var templateHelpers = function() {
   } else if (this.model || (this.collection && this.collection.at(0))) {
     var model = this.model ? this.model : this.collection.at(0);
     modelKeys = model.keys().sort();
+    console.log(modelKeys);
   }
 
   var columnNames = Marionette.getOption(this, 'columnNames');
