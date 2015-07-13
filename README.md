@@ -1,4 +1,6 @@
 #kegeratorjs#
+[![Build Status](https://travis-ci.org/Stonelinks/kegeratorjs.svg?branch=master)](https://travis-ci.org/Stonelinks/kegeratorjs)
+
 A web enabled kegerator powered by a Javascript front end and Python (Flask) backend kegerator
 
 ##Getting Started##
