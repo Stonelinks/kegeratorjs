@@ -3,6 +3,5 @@ python:
   - "3.4"
 install:
   - ./dependencies
-  - npm install
 script:
   - ./unitTest
