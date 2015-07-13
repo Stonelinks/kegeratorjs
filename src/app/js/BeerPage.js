@@ -8,9 +8,6 @@ var KegsTable = require('./keg/KegsTable')
 
 var RowView = require('./views/row');
 
-var BeerPage = RowView.extend({
-  childView: BeersTable
-});
 
 module.exports = function(viewPort) {
   var kegs = new KegsCollection();
@@ -22,9 +19,19 @@ module.exports = function(viewPort) {
       beers
         .fetch()
         .then(function() {
-          viewPort.show(new BeerPage({
-            collection: beers
-          }));
+
+          var BeerPage = RowView.extend({
+            childViews: [
+              KegsTable.extend({
+                collection: kegs
+              }),
+              BeersTable.extend({
+                collection: beers
+              })
+            ]
+          });
+
+          viewPort.show(new BeerPage());
         });
     });
 };

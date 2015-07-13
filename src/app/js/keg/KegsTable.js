@@ -4,6 +4,8 @@ var TableView = require('../views/table');
 
 var KegsTable = TableView.extend({
   
+  title: 'Kegs'
+  
   // modelKeys: ['name', 'style', 'description', 'brewedBy', 'abv'],
 // 
   // columnNames: {
