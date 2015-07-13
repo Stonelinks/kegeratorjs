@@ -65,7 +65,9 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))
         payload['id'] = id
-        self.assertEqual(reply, payload)
+        print(reply)
+        print(payload)
+        self.assertEqual(reply['data'], payload)
 
         #put
         delta =  {'name': 'Nic W'}
@@ -73,7 +75,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/beers/' + str(id))
         self.assertEqual(status, 200)
-        self.assertEqual(reply['name'], 'Nic W')
+        self.assertEqual(reply['data']['name'], 'Nic W')
 
         #delete
         status = self.delete(host_addr+'/beers/'+ str(id))
@@ -108,7 +110,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.put(host_addr + '/kegs/1',  payload)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/kegs/1')
-        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply['data'].items()) ), True)
 
         #put
         delta =  {'beerId': 6,
@@ -120,7 +122,7 @@ class TestApi(unittest.TestCase):
 
         reply, status = self.get(host_addr + '/kegs/1' )
         self.assertEqual(status, 200)
-        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply['data'].items()) ), True)
 
         delta = {'beerId': 6,
                 'capacityL': 'b'}
@@ -131,7 +133,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.put(host_addr+'/kegs/1', delta)
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/kegs/1' )
-        self.assertEqual(reply['beerId'], 7)
+        self.assertEqual(reply['data']['beerId'], 7)
         self.assertEqual(status, 200)
 
 
@@ -147,7 +149,7 @@ class TestApi(unittest.TestCase):
         reply, status = self.get(host_addr + '/users/' + str(id))
         self.assertEqual(status, 200)
         payload['id'] = id
-        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply['data'].items()) ), True)
 
         #put
         delta =  {'name': 'Nic W'}
@@ -155,7 +157,7 @@ class TestApi(unittest.TestCase):
         self.assertEqual(status, 200)
         reply, status = self.get(host_addr + '/users/' + str(id))
         self.assertEqual(status, 200)
-        self.assertEqual(reply['name'], 'Nic W')
+        self.assertEqual(reply['data']['name'], 'Nic W')
 
         #delete
         status = self.delete(host_addr+'/users/'+ str(id))
@@ -195,7 +197,7 @@ class TestApi(unittest.TestCase):
         #GET==PUT
         reply, status = self.get(host_addr + '/thermostat/')
         self.assertEqual(status, 200)
-        self.assertEqual(set(payload.items()).issubset( set(reply.items()) ), True)
+        self.assertEqual(set(payload.items()).issubset( set(reply['data'].items()) ), True)
 
 
         #post should fail
