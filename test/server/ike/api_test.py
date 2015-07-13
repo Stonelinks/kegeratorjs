@@ -139,8 +139,8 @@ class TestApi(unittest.TestCase):
 
     def test_users(self):
         #succeed:
-        payload = { 'name': 'Nic',
-                    'email': 'nhwiles@gmail.com',
+        payload = { 'name': 'test',
+                    'email': 'test@gmail.com',
                     'nfcId':'',
                     'rfidId':'',
                     'untappedName':''}
