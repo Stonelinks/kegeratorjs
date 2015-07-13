@@ -1,5 +1,6 @@
 var Marionette = require('backbone.marionette');
 var _ = require('underscore');
+var util = require('../util');
 
 var templateHelpers = function() {
 
@@ -17,7 +18,7 @@ var templateHelpers = function() {
     title: Marionette.getOption(this, 'title'),
     modelKeys: modelKeys,
     columnNames: modelKeys.map(function(key) {
-      return columnNames && columnNames[key] ? columnNames[key] : key.toUpperCase();
+      return columnNames && columnNames[key] ? columnNames[key] : util.camelCaseToRegularForm(key);
     })
   };
 };

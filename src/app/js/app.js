@@ -43,9 +43,8 @@ var createDummyView = function(msg) {
 
 var pages = {
   dashboard: createDummyView('Nothing here yet'),
-  beers: showView(require('./BeerPage')),
-  sensors: createDummyView('I\'m the sensor page'),
-  settings: createDummyView('I\'m the settings page')
+  beers: showView(require('./beers')),
+  events: showView(require('./events'))
 };
 pages['*catchall'] = pages.dashboard;
 
