@@ -1,60 +1,66 @@
-# kegeratorjs
-Javascript kegerator
+#kegeratorjs#
+A web enabled kegerator powered by a Javascript front end and Python (Flask) backend kegerator
 
 ##Getting Started##
+  - Customize info about your remot host using the ```environment``` file
   - To resolve dependencies run ```./dependencies``` on the target
-  - Deploy using ```./deploy```
-  - Manage server using ```./start``` ```./stop``` and ```./restart```
-  - To copy your public key to the remote server so you don't have to type a password you can run ```./copyKey``` 
+  - Deploy to remote host using ```./deploy```
+  - Manage server on remote host using ```./start``` ```./stop``` and ```./restart```
+  - To copy your public key to the remote host so you don't have to type a password you can run ```./copyKey``` 
+
+###Running without hardware###
+  - mocks are used when the host name is not "ike" 
   - To run tests locally use ```./unitTest``` (be sure to resolve dependencies first)
+  - To run the server locally with mocked HW support, run ```./src/server/main.py```
  
 
 ##MODELS##
 
 ###kegerator model###
-  - beers [ array of beer Ids ]
   - kegs [ array of keg Ids ]
-  - events [ array of event Ids ]
-  - currentTemperature
-  - averageTemperature
-  - desiredTemperature (frontend to change this with a PUT)
-  - currentKegPressure
-  - averageKegPressure
-  - currentTankPressure
-  - averageTankPressure
+  - name
 
-###beer model (from web.py)###
+###thermostat model###
+  - degC (read only)
+  - avgDegC (read only)
+  - compressorOn (read only)
+  - deadBandDegC
+  - setPointDegC
+  - onAddsHeat
+
+###beer model (from api.py)###
   - id (PK)
   - name
   - description
-  - picture (optional.. lets do this later)
+  - picture (coming in 1.0)
   - brewedBy
   - style
-  - ABV (optional)
+  - abv (optional)
   - rating (have a rateBeer(beerId, rating) endpoint in the API somewhere)
-  - cost / brew (optional)
-  - IBU (bitterness, optional)
-  - SRM (color, optional)
+  - costPerPint (optional)
+  - ibu (bitterness, optional)
+  - srm (color, optional)
 
-###keg model (from web.py)###
+###keg model (from api.py)###
   - id (PK)... can just be index in 
   - beerId (maps to a beer model)
-  - pintsConsumed
-  - pintsTotal
+  - capacityL
+  - consumedL
+  - flowRateLitersPerSec
   
-###event model (from web.py)###
+###event model (from api.py)###
   - id (PK)
   - timestamp
   - type
-    - newKeg: new event on tap
+    - newKeg: new keg on tap
     - pour: someone poured a beer
     - finishedKeg: a keg is dead
     - newUser: added a new user (coming in 1.0)
-    - sensorSnapshot: current sensor state
-    - settingsSnapshot: current kegerator settings
+    - thermostatSense: current thermostat sensed value chaged
+    - thermostatSettings: current thermostat settings changed
   - data (arbitrary json string useful for the particular event)
   
-###user model (not yet, coming in 1.0)###
+###user model (coming in 1.0)###
   - id
   - name
   - email
@@ -80,7 +86,7 @@ Javascript kegerator
   - ability to add / remove an indicator, gauge or stripchart... store this in localstorage
   - list of keg status widgets per keg
 
-###thermosthat stripchart###
+###thermostat stripchart###
   - switch between average and actual
   shows desiredTemperature and currentTemperature are over time
   relay status (on or off)
@@ -106,87 +112,79 @@ Javascript kegerator
 
 ##ENDPOINTS##
 
-###kegerator###
+###kegerator (/api/v1/kegerator)###
 
-GET /v1/kegerator
-  return json serialzation of kegerator model
+####GET####
+  - return
+	  - json serialzation of kegerator model
 
-PUT /v1/kegerator
-  update kegerator settings, in this case only desiredTemperature
-  return
-    json serialzation of kegerator model
-  parameters
-    desiredTemperature
-
-###beer###
-
-GET /v1/beers
-  return all beers in beer db
-  parameters
-    limit (optional, default to 100)
-
-POST /v1/beers
-  create a new beer
-  parameters
-    whatever fields the beer model needs
-  server should create Id, add to beer DB
-  return full json of beer
-
-GET /v1/beers/<beerId>
-  get info about beer at <beerId>
-  return full json of beer 
-
-PUT /v1/beers/<beerId>
-  edit beer at <beerId>
-  parameters
-    whatever fields that need updating
-  return full json of beer 
-
-DELETE /v1/beers/<beerId>
-  delete beer at <beerId>
-  return empty json
-
-###kegs###
-
-GET /v1/kegs
-  return all kegs in keg db
+####PUT####
+  update kegerator settings
   
-POST /v1/kegs
-  create a new keg
-  parameters
-    whatever fields the keg model needs
-  server should create Id, add to keg DB
-  return full json of keg
+  - return
+	  - json serialzation of kegerator model
 
-GET /v1/kegs/<kegId>
-  get info about keg at <kegId>
-  return full json of keg 
+###beer (/api/v1/beers/)###
 
-PUT /v1/kegs/<kegId>
-  edit keg at <kegId>
-  parameters
-    whatever fields that need updating
-  return full json of keg 
+####GET####
+  - return all beers in beer db
+  - parameters
+  - limit (optional, default to 100) (coming in 1.0)
 
-DELETE /v1/kegs/<kegId>
-  delete keg at <kegId>
-  return empty json
+####POST####
+  create a new beer, creating new Id, add to beer DB
+  
+  - parameters
+     - whatever fields the beer model needs
+  - return ID of new beer
 
-###events###
+####GET \<beerId\>####
+  get info about beer at \<beerId\>
+  
+  - return full json of beer 
 
-GET /events
-  return
-    all events
-  parameters
-    startDate (if 'now' then just return the last one that matches)
-    endDate (optional)
-    limit (optional, but default to 100 or something)
+####PUT \<beerId\>####
 
-GET /events/query
-  return
-    fields from events of matching types
-  parameters
-    types [ array of event types ]
-    fieldNames [ whatever data you want out of the "data" field for matching event types ]
-    startDate (if 'now' then just return the last one that matches)
-    endDate (optional)
+  edit beer at \<beerId\>
+  
+  - parameters
+    - whatever fields that need updating
+  - return
+  	 - full json of updated beer model
+
+####DELETE \<beerId\>####
+  delete beer at \<beerId\>
+  
+  - return
+	  - empty json
+
+###kegs (/api/v1/kegs/)###
+
+####GET####
+  - return all kegs in keg db
+
+####GET \<kegId\>####
+  get info about keg at \<kegId\>
+  
+  - return
+	  - full json of keg 
+
+####PUT \<kegId\>####
+  edit keg at \<kegId\>
+  
+  - parameters
+	  - whatever fields that need updating
+  - return full json of updated keg 
+
+###events (/api/v1/events)###
+
+####GET####
+
+  - return
+	  - events of matching specified parameters (or all events)
+  - parameters
+	  - startDate (if 'now' then just return the last one that matches)
+	  - limit (optional, but default to 100 or something) (coming in 1.0)
+	  - types [ comma separated list of event types ]
+	  - startDate (if 'now' then just return the last one that matches)
+	  - endDate (optional)
