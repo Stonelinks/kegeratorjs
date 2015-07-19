@@ -114,7 +114,7 @@ class Keg():
                 self._time_last_pouring = time_now
 
             if not self._is_pouring:
-                    self._pour_start_time = time_now
+                self._pour_start_time = time_now
 
             if self._is_pouring:
                 self._this_pour_l += delta_flow
