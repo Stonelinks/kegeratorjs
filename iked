@@ -1,9 +1,10 @@
 #!/bin/bash
 PROC_NAME="iked"
-LOG_FILE=~/.${PROC_NAME}.log
+LOG_FILE=/home/pi/.${PROC_NAME}.log
 
 #while true; do
 touch ${LOG_FILE}
-echo $'\n' >> ${LOG_FILE}
-echo "***Starting ${PROC_NAME}: $* ***" >> ${LOG_FILE}
-exec $* 2>&1 >> ${LOG_FILE}
+exec &>> ${LOG_FILE}
+echo $'\n'
+echo "***Starting ${PROC_NAME}: $* ***"
+exec $* &>> ${LOG_FILE}

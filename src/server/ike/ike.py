@@ -28,16 +28,6 @@ class Ike:
         #self.kegPressure =
         #self.tankPressure =
 
-    def run(self):
-        print("Welcome to IKE, version {}".format(self.version))
-        api.launch(self)
-        while(1):
-                print(chr(27) + "[2J")
-                print(self._thermostat)
-                print(self)
-                time.sleep(1)
-
-
     def __del__(self):
         self._thermostat.join()
         self._kegManager.join()
