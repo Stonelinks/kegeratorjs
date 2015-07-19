@@ -24,14 +24,15 @@ class Ike:
         self.compressorRelay = relay.Relay(config.RELAY_PIN)
         self._thermostat = thermostat.Thermostat(self.tempSensor.get_temperature, self.compressorRelay, on_adds_heat=0, logger=self._logger)
         self._thermostat.start()
+        RPIO.wait_for_interrupts(threaded=True)
         #TODO: pressure and ADC
         #self.kegPressure =
         #self.tankPressure =
 
     def __del__(self):
-        self._thermostat.join()
-        self._kegManager.join()
-        RPIO.cleanup()
+            self._thermostat.join()
+            self._kegManager.join()
+            RPIO.cleanup()
 
     def __str__(self):
         pass
