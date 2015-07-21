@@ -2,6 +2,7 @@ __author__ = 'nwiles'
 import tinydb
 import time
 import threading
+import copy
 
 class Event():
     addKeg='addKeg' #new keg on tap
@@ -63,6 +64,6 @@ class Lager:
                 else:
                     query = f & query
             if query:
-                return self.event_db.search(query)
+                return copy.deepcopy(self.event_db.search(query))
             else:
-                return self.event_db.all()
+                return copy.deepcopy(self.event_db.all())
