@@ -44,9 +44,9 @@ class Lager:
                             ret.append(self.latestData[t])
                         except KeyError:
                             pass
-                    return ret
+                    return copy.deepcopy(ret)
                 else:
-                    return self.latestData.values()
+                    return copy.deepcopy(self.latestData.values())
             else:
                 #search log history
                 filters = []
