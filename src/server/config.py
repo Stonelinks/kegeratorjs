@@ -12,5 +12,5 @@ FLOW_1_PIN = 23
 FLOW_2_PIN = 24
 
 STATIC_FILES=make_file_abspath('../../build')
-
+FLASK_DEBUG = False
 DB_ROOT = '/home/pi/' if socket.gethostname() == 'ike' else make_file_abspath('../../sampledata')

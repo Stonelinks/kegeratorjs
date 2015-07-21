@@ -6,7 +6,6 @@ import ike.lager as lager
 import RPIO
 import w1thermsensor
 import semantic_version as sv
-import time
 import os.path
 import config
 

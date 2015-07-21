@@ -220,7 +220,7 @@ def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
 
 def launch(_ike_instance):
     global ike_instance
-    ike_instance = _ike_instance;
+    ike_instance = _ike_instance
     wtforms_json.init()
     
     api_url_prefix = '/api/v1'
@@ -250,4 +250,4 @@ def launch(_ike_instance):
     app.add_url_rule('/', 'root', lambda: app.send_static_file('index.html'))
     app.add_url_rule('/<path:path>', 'send_static', lambda path: app.send_static_file(path))
 
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=config.FLASK_DEBUG)
