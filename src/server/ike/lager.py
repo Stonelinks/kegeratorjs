@@ -1,5 +1,7 @@
 __author__ = 'nwiles'
 import tinydb
+import tinydb.middlewares
+import tinydb.storages
 import time
 import threading
 import copy
@@ -14,7 +16,7 @@ class Event():
 
 class Lager:
     def __init__(self, event_log_path):
-        self.event_db = tinydb.TinyDB(event_log_path)
+        self.event_db = tinydb.TinyDB(event_log_path, storage=tinydb.middlewares.CachingMiddleware(tinydb.storages.JSONStorage))
         #cache one of each of the last event types
         self.latestData = {}
         self._api_lock = threading.Lock()
