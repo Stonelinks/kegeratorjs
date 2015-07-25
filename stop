@@ -1,13 +1,5 @@
 #!/bin/bash
 source environment
 ssh ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
-
-if ps ax | grep -v grep | grep "sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/server/main.py" > /dev/null
-then
-  pid=\$(ps -ef | grep -v grep | grep "sudo /usr/bin/python3 /home/${USER_NAME}/kegeratorjs/src/server/main.py" | awk '{ print \$2 }')
-  echo "iked is running (\$pid), killing it"
-  sudo kill \$pid
-else
-  echo "iked is not running"
-fi
+sudo /home/${USER_NAME}/kegeratorjs/iked stop
 EOF

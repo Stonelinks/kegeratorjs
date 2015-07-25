@@ -1,5 +1,5 @@
 #!/bin/bash
 source environment
 ssh ${USER_NAME}@${IP_ADDR} /bin/bash << EOF
-tail -f ~/.iked.log
+tail -f /var/log/iked.err
 EOF
