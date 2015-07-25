@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+CMD="curl http://localhost:5000/api/v1/thermostat/"
+m=`time ( ${CMD} &> /dev/null) 2>&1` && curl -d "m=$m" https://nosnch.in/4fecb35e20

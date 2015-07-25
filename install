@@ -4,3 +4,5 @@ cd ${DIR}
 sudo cp iked /etc/init.d/
 sudo chmod +x /etc/init.d/iked
 sudo update-rc.d iked defaults
+#install chron task
+sudo cp ikedChecker /etc/cron.hourly/
