@@ -5,3 +5,8 @@ install:
   - ./dependencies
 script:
   - ./unitTest
+notifications:
+  email:
+    recipients:
+      - nhwiles@gmail.com
+      - lucas.p.doyle@gmail.com
