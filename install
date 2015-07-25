@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+DIR=`dirname "$(readlink -f "$0")"`
+cd ${DIR}
+sudo cp iked /etc/init.d/
+sudo chmod +x /etc/init.d/iked
+sudo update-rc.d iked defaults
