@@ -48,7 +48,7 @@ class Lager:
                             pass
                     return copy.deepcopy(ret)
                 else:
-                    return copy.deepcopy(self.latestData.values())
+                    return copy.deepcopy(self.latestData).values()
             else:
                 #search log history
                 filters = []
