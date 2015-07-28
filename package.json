@@ -29,6 +29,7 @@
     "backbone.marionette": "2.3.2",
     "bootstrap": "3.3.2",
     "hbsfy": "2.2.1",
+    "highcharts-browserify": "^0.1.5",
     "jquery": "2.1.4",
     "lodash": "3.9.3",
     "moment": "2.10.3",

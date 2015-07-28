@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="CppTools.Loader" reportImplicitCastToBool="false" reportNameReferencedOnce="false" warnedAboutFileOutOfSourceRoot="true" version="3" currentProject="$PROJECT_DIR$/virtualenv/lib/python3.4/config-3.4m/Makefile" compilerSelect="AUTO" />
+  <component name="CppTools.Loader" reportImplicitCastToBool="false" reportNameReferencedOnce="false" warnedAboutFileOutOfSourceRoot="true" version="3" currentProject="$PROJECT_DIR$/node_modules/gulp/node_modules/semver/Makefile" compilerSelect="AUTO" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
@@ -11,9 +11,7 @@
     <ConfirmationsSetting value="0" id="Add" />
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_6" default="true" assert-keyword="true" jdk-15="true" project-jdk-name="Python 3.4.3 virtualenv at ~/Development/kegeratorjs/virtualenv" project-jdk-type="Python SDK">
-    <output url="file://$PROJECT_DIR$/out" />
-  </component>
+  <component name="ProjectRootManager" version="2" project-jdk-name="Python 3.4.3 virtualenv at ~/Development/kegeratorjs/virtualenv" project-jdk-type="Python SDK" />
   <component name="masterDetails">
     <states>
       <state key="ProjectJDKs.UI">

@@ -3,6 +3,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
+var LiveCharts = require('./views/liveChart');
 require('bootstrap');
 
 var app = new Marionette.Application();
@@ -42,7 +43,7 @@ var createDummyView = function(msg) {
 };
 
 var pages = {
-  dashboard: createDummyView('Nothing here yet'),
+  dashboard: showView(require('./thermostat')),
   beers: showView(require('./beers')),
   events: showView(require('./events'))
 };
