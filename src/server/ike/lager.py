@@ -5,6 +5,7 @@ import tinydb.storages
 import time
 import threading
 import copy
+import math
 
 class Event():
     addKeg='addKeg' #new keg on tap
@@ -14,13 +15,17 @@ class Event():
     thermostatSettings='thermostatSettings' #thermostat settings changed
     newUser='newUser' # added a new user (coming in 1.0)
 
+def temp_sense_is_note_worthy(lastSample, thisSample):
+    return math.fabs(lastSample['data']['degC'] - thisSample['data']['degC']) >= 0.2
+
 class Lager:
     def __init__(self, event_log_path):
         self.event_db = tinydb.TinyDB(event_log_path, storage=tinydb.middlewares.CachingMiddleware(tinydb.storages.JSONStorage))
         #cache one of each of the last event types
         self.latestData = {}
         self._api_lock = threading.Lock()
-
+        self._downsample_policy = {}
+        self._downsample_policy[Event.thermostatSense] = temp_sense_is_note_worthy
     def __del__(self):
         self.event_db.close()
 
@@ -29,8 +34,13 @@ class Lager:
             this_entry = {'type': str(type),
                           'time': time.time(),
                           'data': data}
-            self.latestData.update({type: this_entry})
-            self.event_db.insert(this_entry)
+            try:
+                log_it = self._downsample_policy[type](self.latestData[type], this_entry)
+            except KeyError:
+                log_it=True;
+            if log_it:
+                self.latestData.update({type: this_entry})
+                self.event_db.insert(this_entry)
 
     def find_events(self, type_filter, start_time, end_time=None):
         with self._api_lock:
