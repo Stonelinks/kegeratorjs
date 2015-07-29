@@ -3,7 +3,7 @@ var Marionette = require('backbone.marionette');
 var LiveChart = require('../views/liveChart');
 
 var ThermostatChart = LiveChart.extend({
-  title: 'Average Temperature',
+  title: 'Sensed Temperature',
   yAxisTitle: 'Temperature (C)',
   seriesName: 'Temperature',
 
@@ -13,7 +13,7 @@ var ThermostatChart = LiveChart.extend({
     setInterval(function() {
       thermostat.fetch().done(function() {
         var x = (new Date()).getTime(), // current time
-            y = parseFloat(thermostat.get('avgDegC'));
+            y = parseFloat(thermostat.get('degC'));
         series.addPoint([x, y], true, true);
       });
     }, 5000);

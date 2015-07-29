@@ -69,6 +69,7 @@ gulp.task('index', function() {
 gulp.task('webserver', function() {
   return gulp.src('./build')
     .pipe(webserver({
+      host: '0.0.0.0',
       livereload: true,
       // directoryListing: true,
       open: true,
