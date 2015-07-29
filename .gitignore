@@ -5,6 +5,8 @@ __pycache__*
 *.out
 *.temp
 
+.idea
+
 virtualenv/*
 
 #InteliJ files

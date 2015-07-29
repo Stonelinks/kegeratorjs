@@ -8,7 +8,7 @@ Highcharts.setOptions({
 });
 
 var LiveChart = Marionette.ItemView.extend({
-    className: 'col-xs-12',
+    className: 'col-xs-12   ',
 
     template: false,
 
@@ -29,6 +29,7 @@ var LiveChart = Marionette.ItemView.extend({
                 events: {
                     load: function() {
                         Marionette.getOption(self, 'onLoad').call(self, this);
+                        self.$el.find('text[text-anchor="end"]:contains(Highcharts)').hide();
                     }
                 }
             },
@@ -62,25 +63,25 @@ var LiveChart = Marionette.ItemView.extend({
             exporting: {
                 enabled: false
             },
-            series: [{
-                name: Marionette.getOption(this, 'seriesName'),
-                data: (function() {
-                    // generate an array of random data
-                    var data = [],
-                        time = (new Date()).getTime(),
-                        i;
-
-                    for (i = -100; i <= 0; i += 1) {
-                        data.push({
-                            x: time + i * 1000,
-                            y: 0.0
-                        });
-                    }
-                    return data;
-                }())
-            }]
-        });
-
+            series: Marionette.getOption(this, 'series')
+            //series: [{
+            //    name: Marionette.getOption(this, 'seriesName'),
+                //data: (function() {
+                //    // generate an array of random data
+                //    var data = [],
+                //        time = (new Date()).getTime(),
+                //        i;
+                //
+                //    for (i = -100; i <= 0; i += 1) {
+                //        data.push({
+                //            x: time + i * 1000,
+                //            y: 0.0
+                //        });
+                //    }
+                //    return data;
+                //}())
+            //}]
+        })
     }
 });
 
