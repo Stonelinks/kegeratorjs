@@ -81,7 +81,7 @@ var LiveChart = Marionette.ItemView.extend({
                 //    return data;
                 //}())
             //}]
-        })
+        });
     }
 });
 

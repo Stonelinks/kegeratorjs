@@ -31,7 +31,7 @@ var ThermostatChart = LiveChart.extend({
   }],
 
   onDestroy: function() {
-    clearInterval(this._pollingInterval)
+    clearInterval(this._pollingInterval);
   }
 });
 
