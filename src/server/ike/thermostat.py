@@ -6,6 +6,7 @@ import ike.lager as lager
 import tinydb
 import os.path
 import config
+import random
 
 class ThermostatState:
     def __init__(self, set_point_deg_c=0, dead_band_deg_c=0, on_adds_heat=False):
@@ -30,11 +31,23 @@ class ThermostatSense:
         self.avg_deg_c = avg_deg_c
 
     def to_json(self):
-        return {"degC":self.deg_c,
-                "avgDegC":self.avg_deg_c}
+        return {
+            "degC": self.deg_c,
+            "avgDegC": self.avg_deg_c
+        }
+
+class ThermostatSenseStub:
+    def __init__(self, deg_c, avg_deg_c):
+        pass
+
+    def to_json(self):
+        return {
+            "degC":random.randrange(0, 100) * 0.1,
+            "avgDegC":random.randrange(0, 100) * 0.1
+        }
 
 class Thermostat(threading.Thread):
-    def __init__(self, temp_input_fn, relay, on_adds_heat, logger):
+    def __init__(self, temp_input_fn, relay, on_adds_heat, logger, thermostatsense=ThermostatSense):
         threading.Thread.__init__(self, name="Thermostat")
         self._logger = logger
         self._db = tinydb.TinyDB(os.path.join(config.DB_ROOT, "thermostat.json"))
@@ -42,7 +55,7 @@ class Thermostat(threading.Thread):
             initial_state = ThermostatState(set_point_deg_c=2.5, dead_band_deg_c=2, on_adds_heat=on_adds_heat)
             self._db.insert(initial_state.to_json())
         self._getTempInput_DegC = temp_input_fn
-        self._sense = ThermostatSense(0, 0)
+        self._sense = thermostatsense(0, 0)
         self._avg_deg_c = runningMean.RunningMean(1000)
         self._relay = relay
         self._outputSetting=False

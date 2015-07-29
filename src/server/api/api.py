@@ -240,7 +240,7 @@ def launch(_ike_instance):
     
     # sensors
     app.add_url_rule(api_url_prefix + '/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
-    app.add_url_rule(api_url_prefix + '/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET','PUT'])
+    app.add_url_rule(api_url_prefix + '/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET', 'PUT'])
     
     # kegerator "core" (whateverthefuck that means)
     app.add_url_rule(api_url_prefix + '/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])

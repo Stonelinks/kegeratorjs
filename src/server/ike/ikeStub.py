@@ -1,5 +1,7 @@
 __author__ = 'nwiles'
 import ike.thermostat as thermostat
+from ike.thermostat import ThermostatSenseStub
+
 import ike.keg as keg
 import ike.lager as lager
 import os.path
@@ -22,4 +24,4 @@ class Ike:
         flow_stubs.append(FlowStub())
         flow_stubs.append(FlowStub())
         self._kegManager = keg.KegManager(flow_meters=flow_stubs)
-        self._thermostat = thermostat.Thermostat(temp_input, set_relay, False, self._logger)
+        self._thermostat = thermostat.Thermostat(temp_input, set_relay, False, self._logger, thermostatsense=ThermostatSenseStub)
