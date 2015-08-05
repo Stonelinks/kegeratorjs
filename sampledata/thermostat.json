@@ -1,1 +1,1 @@
-{"_default": {"1": {"setPointDegC": 1, "onAddsHeat": false, "deadBandDegC": 2}}}
+{"_default": {"1": {"onAddsHeat": false, "deadBandDegC": 2.0, "setPointDegC": 4.0}}}
