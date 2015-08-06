@@ -1,5 +1,6 @@
-var Marionette = require('backbone.marionette'),
-    Highcharts = require('highcharts-browserify');
+var Marionette = require('backbone.marionette');
+var _ = require('underscore');
+var Highcharts = require('highcharts-browserify');
 
 Highcharts.setOptions({
     global: {
@@ -7,9 +8,14 @@ Highcharts.setOptions({
     }
 });
 
-var LiveChart = Marionette.ItemView.extend({
-    className: 'col-xs-12   ',
+var HighChart = Marionette.ItemView.extend({
+    className: 'col-xs-12',
 
+    getOptionAndResult: function(thing) {
+        var realThing = this.getOption(thing)
+        return _.isFunction(realThing) ? realThing.call(this) : realThing
+    },
+    
     template: false,
 
     title: undefined,
@@ -21,6 +27,8 @@ var LiveChart = Marionette.ItemView.extend({
     onShow: function (options) {
         var self = this;
 
+        this.chartInstance = null
+
         this.$el.highcharts({
             chart: {
                 type: 'line',
@@ -28,13 +36,14 @@ var LiveChart = Marionette.ItemView.extend({
                 marginRight: 10,
                 events: {
                     load: function () {
-                        self.getOption('onLoad').call(self, this);
+                        self.chartInstance = this
+                        self.getOptionAndResult.call(self, 'onLoad');
                         self.$el.find('text[text-anchor="end"]:contains(Highcharts)').hide();
                     }
                 }
             },
             title: {
-                text: this.getOption('title')
+                text: this.getOptionAndResult('title')
             },
             xAxis: {
                 type: 'datetime',
@@ -42,7 +51,7 @@ var LiveChart = Marionette.ItemView.extend({
             },
             yAxis: {
                 title: {
-                    text: this.getOption('yAxisTitle')
+                    text: this.getOptionAndResult('yAxisTitle')
                 },
                 plotLines: [{
                     value: 0,
@@ -63,9 +72,9 @@ var LiveChart = Marionette.ItemView.extend({
             exporting: {
                 enabled: false
             },
-            series: this.getOption('series')
+            series: this.getOptionAndResult('series')
             //series: [{
-            //    name: this.getOption('seriesName'),
+            //    name: this.getOptionAndResult('seriesName'),
             //data: (function() {
             //    // generate an array of random data
             //    var data = [],
@@ -85,4 +94,4 @@ var LiveChart = Marionette.ItemView.extend({
     }
 });
 
-module.exports = LiveChart;
+module.exports = HighChart;

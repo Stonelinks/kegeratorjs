@@ -34,7 +34,7 @@ var pages = {
     kegs: showView(Pages.kegs),
     history: showView(Pages.history)
 };
-pages['*catchall'] = pages.dashboard;
+pages['*catchall'] = pages.realtime;
 
 var Router = Marionette.AppRouter.extend({
     routes: pages

@@ -1,1 +1,1 @@
-{"_default": {"1": {"capacityL": 17.0, "beerId": 2, "consumedL": 7.007777777777778}, "2": {"capacityL": 17.0, "beerId": 1, "consumedL": 14.022592592592648}}}
+{"_default": {"1": {"consumedL": 7.007777777777778, "capacityL": 17.0, "beerId": 2}, "2": {"consumedL": 14.022592592592648, "capacityL": 17.0, "beerId": 1}}}

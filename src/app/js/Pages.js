@@ -4,7 +4,8 @@
 
 var RowView = require('./common/RowView');
 var ThermostatModel = require('./ThermostatModel');
-var ThermostatChart = require('./ThermostatChart');
+var ThermostatRealtimeChart = require('./ThermostatRealtimeChart');
+var ThermostatEventChart = require('./ThermostatEventChart');
 var KegsCollection = require('./KegsCollection');
 var KegsTable = require('./KegsView');
 var BeersCollection = require('./BeersCollection');
@@ -17,22 +18,20 @@ module.exports = {
     realtime: function (viewPort) {
         var thermostat = new ThermostatModel();
 
-        thermostat
-            .fetch()
-            .then(function () {
+        thermostat.fetch().then(function () {
 
-                var ThermostatPage = RowView.extend({
-                    childViews: [
-                        ThermostatChart.extend({
-                            model: thermostat
-                        })
-                    ]
-                });
-
-                viewPort.show(new ThermostatChart({
-                    model: thermostat
-                }));
+            var ThermostatPage = RowView.extend({
+                childViews: [
+                    ThermostatRealtimeChart.extend({
+                        model: thermostat
+                    })
+                ]
             });
+
+            viewPort.show(new ThermostatRealtimeChart({
+                model: thermostat
+            }));
+        });
     },
 
     kegs: function (viewPort) {
@@ -66,13 +65,14 @@ module.exports = {
 
     history: function (viewPort) {
         var events = new EventsCollection();
+        var thermostat = new ThermostatModel();
 
-        events
-            .fetch()
-            .then(function () {
+        thermostat.fetch().then(function () {
+            events.fetch().then(function () {
                 var EventsPage = RowView.extend({
                     childViews: [
-                        EventLog.extend({
+                        ThermostatEventChart.extend({
+                            model: thermostat,
                             collection: events
                         })
                     ]
@@ -80,5 +80,6 @@ module.exports = {
 
                 viewPort.show(new EventsPage());
             });
+        });
     }
 };

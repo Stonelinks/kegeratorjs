@@ -1,15 +1,16 @@
 var Marionette = require('backbone.marionette');
 
-var LiveChart = require('./common/ChartView');
+var HighChart = require('./common/ChartView');
 
-var ThermostatChart = LiveChart.extend({
+var ThermostatRealtimeChart = HighChart.extend({
     title: 'Temperature',
     yAxisTitle: 'Temperature (C)',
 
     _pollingInterval: null,
 
-    onLoad: function (chart) {
+    onLoad: function () {
         var thermostat = this.model;
+        var chart = this.chartInstance
         var _poll = function () {
             thermostat.fetch().done(function () {
                 var x = (new Date()).getTime(), // current time
@@ -38,4 +39,4 @@ var ThermostatChart = LiveChart.extend({
     }
 });
 
-module.exports = ThermostatChart;
+module.exports = ThermostatRealtimeChart;
