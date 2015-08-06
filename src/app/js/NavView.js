@@ -15,8 +15,8 @@ var NavView = Marionette.ItemView.extend({
                 'airware_logo.png',
                 'airware_logo.png',
                 'airware_logo.png',
-                'airware_logo.png',
                 'airwave.png',
+                'Shrek2.png',
                 'unmanned_innovations.png',
                 '3DR_logo_short_color.gif'
             ]),
