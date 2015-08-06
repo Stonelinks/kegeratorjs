@@ -20,9 +20,8 @@ var ThermostatEventChart = HighChart.extend({
         });
 
         var thermostat = this.model;
-        var temperatureEvents = this.collection.filter(function(event) {
-            var time = moment(event.get('time') * 1000);
-            return event.get('type') == 'thermostatSense' && time.year() > 2000;
+        var temperatureEvents = this.collection.where({
+            type: 'thermostatSense'
         });
 
         temperatureEvents.forEach(function(event) {

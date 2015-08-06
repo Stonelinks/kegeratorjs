@@ -6,6 +6,7 @@ var RowView = require('./common/RowView');
 var ThermostatModel = require('./ThermostatModel');
 var ThermostatRealtimeChart = require('./ThermostatRealtimeChart');
 var ThermostatEventChart = require('./ThermostatEventChart');
+var PourEventChart = require('./PourEventChart');
 var KegsCollection = require('./KegsCollection');
 var KegsTable = require('./KegsView');
 var BeersCollection = require('./BeersCollection');
@@ -73,6 +74,9 @@ module.exports = {
                     childViews: [
                         ThermostatEventChart.extend({
                             model: thermostat,
+                            collection: events
+                        }),
+                        PourEventChart.extend({
                             collection: events
                         })
                     ]
