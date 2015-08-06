@@ -6,7 +6,7 @@ var util = require('./util');
 var EventItem = Marionette.ItemView.extend({
     template: require('../tmpl/eventitem.hbs'),
 
-    templateHelpers: function () {
+    templateHelpers: function() {
         var time = moment(this.model.get('time') * 1000);
         return {
             eventType: util.camelCaseToRegularForm(this.model.get('type')),

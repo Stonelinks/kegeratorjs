@@ -10,22 +10,22 @@ var ThermostatEventChart = HighChart.extend({
     title: 'Temperature History',
     yAxisTitle: 'Temperature (C)',
 
-    series: function () {
+    series: function() {
 
-        var series = ['Sensed', 'Commanded', 'Average', 'UpperLimit', 'LowerLimit'].map(function (seriesName) {
+        var series = ['Sensed', 'Commanded', 'Average', 'UpperLimit', 'LowerLimit'].map(function(seriesName) {
             return {
                 name: seriesName,
                 data: []
-            }
-        })
-
-        var thermostat = this.model;
-        var temperatureEvents = this.collection.filter(function (event) {
-            var time = moment(event.get('time') * 1000)
-            return event.get('type') == 'thermostatSense' && time.year() > 2000
+            };
         });
 
-        temperatureEvents.forEach(function (event) {
+        var thermostat = this.model;
+        var temperatureEvents = this.collection.filter(function(event) {
+            var time = moment(event.get('time') * 1000);
+            return event.get('type') == 'thermostatSense' && time.year() > 2000;
+        });
+
+        temperatureEvents.forEach(function(event) {
             var x = event.get('time') * 1000,
                 setPointDegC = parseFloat(thermostat.get('setPointDegC')),
                 deadBandDegC = parseFloat(thermostat.get('deadBandDegC'));
@@ -35,12 +35,12 @@ var ThermostatEventChart = HighChart.extend({
             series[2].data.push([x, parseFloat(event.get('data').avgDegC)]);
             series[3].data.push([x, setPointDegC + deadBandDegC]);
             series[4].data.push([x, setPointDegC - deadBandDegC]);
-        })
+        });
 
-        return series
+        return series;
     },
 
-    onDestroy: function () {
+    onDestroy: function() {
     }
 });
 

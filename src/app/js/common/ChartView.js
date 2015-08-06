@@ -12,10 +12,10 @@ var HighChart = Marionette.ItemView.extend({
     className: 'col-xs-12',
 
     getOptionAndResult: function(thing) {
-        var realThing = this.getOption(thing)
-        return _.isFunction(realThing) ? realThing.call(this) : realThing
+        var realThing = this.getOption(thing);
+        return _.isFunction(realThing) ? realThing.call(this) : realThing;
     },
-    
+
     template: false,
 
     title: undefined,
@@ -24,10 +24,10 @@ var HighChart = Marionette.ItemView.extend({
 
     seriesName: undefined,
 
-    onShow: function (options) {
+    onShow: function(options) {
         var self = this;
 
-        this.chartInstance = null
+        this.chartInstance = null;
 
         this.$el.highcharts({
             chart: {
@@ -35,8 +35,8 @@ var HighChart = Marionette.ItemView.extend({
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
-                    load: function () {
-                        self.chartInstance = this
+                    load: function() {
+                        self.chartInstance = this;
                         self.getOptionAndResult.call(self, 'onLoad');
                         self.$el.find('text[text-anchor="end"]:contains(Highcharts)').hide();
                     }
@@ -60,7 +60,7 @@ var HighChart = Marionette.ItemView.extend({
                 }]
             },
             tooltip: {
-                formatter: function () {
+                formatter: function() {
                     return '<b>' + this.series.name + '</b><br/>' +
                         Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
                         Highcharts.numberFormat(this.y, 2);

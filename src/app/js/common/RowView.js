@@ -5,20 +5,20 @@ module.exports = Marionette.LayoutView.extend({
 
     childViews: [],
 
-    initialize: function () {
-        this.childViews.forEach(function (View, index) {
+    initialize: function() {
+        this.childViews.forEach(function(View, index) {
             this.addRegion('row' + index, '.row:nth-of-type(' + (index + 1) + ')');
         }.bind(this));
     },
 
-    templateHelpers: function () {
+    templateHelpers: function() {
         return {
             childViews: this.childViews
         };
     },
 
-    onShow: function () {
-        this.childViews.forEach(function (View, index) {
+    onShow: function() {
+        this.childViews.forEach(function(View, index) {
             this.getRegion('row' + index).show(new View(this.options));
         }.bind(this));
     }

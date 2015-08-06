@@ -1,14 +1,14 @@
 var Marionette = require('backbone.marionette');
 var _ = require('underscore');
 
-var chooseRandom = function (list) {
+var chooseRandom = function(list) {
     return list[Math.floor(Math.random() * list.length)];
 };
 
 var NavView = Marionette.ItemView.extend({
     template: require('../tmpl/nav.hbs'),
 
-    templateHelpers: function () {
+    templateHelpers: function() {
         return {
             logoFileName: chooseRandom([
                 'airware_logo.png',
@@ -36,7 +36,7 @@ var NavView = Marionette.ItemView.extend({
         };
     },
 
-    onRender: function () {
+    onRender: function() {
         var activeClass = 'btn-primary';
         var inactiveClass = 'btn-default';
         var navButtons = '.kegerator-nav a';
@@ -52,8 +52,8 @@ var NavView = Marionette.ItemView.extend({
         this.$el.find(navButtons).not(activeButton).addClass(inactiveClass);
     },
 
-    initialize: function () {
-        setInterval(function () {
+    initialize: function() {
+        setInterval(function() {
             this.render();
         }.bind(this), 60 * 1000);
     }

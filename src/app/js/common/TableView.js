@@ -2,7 +2,7 @@ var Marionette = require('backbone.marionette');
 var _ = require('underscore');
 var util = require('util');
 
-var templateHelpers = function () {
+var templateHelpers = function() {
 
     var modelKeys = [];
     if (this.getOption('modelKeys')) {
@@ -18,7 +18,7 @@ var templateHelpers = function () {
     return {
         title: this.getOption('title'),
         modelKeys: modelKeys,
-        columnNames: modelKeys.map(function (key) {
+        columnNames: modelKeys.map(function(key) {
             return columnNames && columnNames[key] ? columnNames[key] : util.camelCaseToRegularForm(key);
         })
     };
@@ -29,11 +29,11 @@ var TableRowView = Marionette.ItemView.extend({
 
     template: require('../../tmpl/tablerow.hbs'),
 
-    templateHelpers: function () {
+    templateHelpers: function() {
         var helpers = templateHelpers.call(this);
         return _.extend(helpers, {
             model: this.model,
-            modelValues: helpers.modelKeys.map(function (key) {
+            modelValues: helpers.modelKeys.map(function(key) {
                 return this.model.get(key);
             }.bind(this))
         });
@@ -49,7 +49,7 @@ module.exports = Marionette.CompositeView.extend({
 
     templateHelpers: templateHelpers,
 
-    childViewOptions: function () {
+    childViewOptions: function() {
         return {
             modelKeys: this.getOption('modelKeys'),
             columnNames: this.getOption('columnNames')

@@ -15,10 +15,10 @@ var EventLog = require('./EventLog');
 
 module.exports = {
 
-    realtime: function (viewPort) {
+    realtime: function(viewPort) {
         var thermostat = new ThermostatModel();
 
-        thermostat.fetch().then(function () {
+        thermostat.fetch().then(function() {
 
             var ThermostatPage = RowView.extend({
                 childViews: [
@@ -34,18 +34,18 @@ module.exports = {
         });
     },
 
-    kegs: function (viewPort) {
+    kegs: function(viewPort) {
         var kegs = new KegsCollection();
         var beers = new BeersCollection();
 
-        kegs.fetch().then(function () {
-            beers.fetch().then(function () {
+        kegs.fetch().then(function() {
+            beers.fetch().then(function() {
 
-                kegs.forEach(function (keg) {
+                kegs.forEach(function(keg) {
                     keg.set('beer', beers.findWhere({
                         id: keg.get('beerId')
-                    }))
-                })
+                    }));
+                });
 
                 var BeerPage = RowView.extend({
                     childViews: [
@@ -63,12 +63,12 @@ module.exports = {
         });
     },
 
-    history: function (viewPort) {
+    history: function(viewPort) {
         var events = new EventsCollection();
         var thermostat = new ThermostatModel();
 
-        thermostat.fetch().then(function () {
-            events.fetch().then(function () {
+        thermostat.fetch().then(function() {
+            events.fetch().then(function() {
                 var EventsPage = RowView.extend({
                     childViews: [
                         ThermostatEventChart.extend({

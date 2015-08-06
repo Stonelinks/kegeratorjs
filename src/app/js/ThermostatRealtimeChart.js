@@ -8,11 +8,11 @@ var ThermostatRealtimeChart = HighChart.extend({
 
     _pollingInterval: null,
 
-    onLoad: function () {
+    onLoad: function() {
         var thermostat = this.model;
-        var chart = this.chartInstance
-        var _poll = function () {
-            thermostat.fetch().done(function () {
+        var chart = this.chartInstance;
+        var _poll = function() {
+            thermostat.fetch().done(function() {
                 var x = (new Date()).getTime(), // current time
                     setPointDegC = parseFloat(thermostat.get('setPointDegC')),
                     deadBandDegC = parseFloat(thermostat.get('deadBandDegC'));
@@ -23,8 +23,8 @@ var ThermostatRealtimeChart = HighChart.extend({
                 chart.series[3].addPoint([x, setPointDegC + deadBandDegC]);
                 chart.series[4].addPoint([x, setPointDegC - deadBandDegC]);
             });
-        }
-        _poll()
+        };
+        _poll();
         this._pollingInterval = setInterval(_poll, 5000);
     },
 
@@ -34,7 +34,7 @@ var ThermostatRealtimeChart = HighChart.extend({
         {name: 'UpperLimit'},
         {name: 'LowerLimit'}],
 
-    onDestroy: function () {
+    onDestroy: function() {
         clearInterval(this._pollingInterval);
     }
 });
