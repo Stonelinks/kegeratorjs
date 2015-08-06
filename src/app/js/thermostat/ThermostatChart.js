@@ -10,25 +10,26 @@ var ThermostatChart = LiveChart.extend({
 
   onLoad: function(chart) {
     var thermostat = this.model;
-    var series = chart.series[0];
-    var series2 = chart.series[1];
     this._pollingInterval = setInterval(function() {
       thermostat.fetch().done(function() {
         var x = (new Date()).getTime(), // current time
-            y = parseFloat(thermostat.get('degC')),
-            y2 = parseFloat(thermostat.get('setPointDegC'));
-        //series.addPoint([x, y], true, true);
-        series.addPoint([x, y]);
-        series2.addPoint([x, y2]);
+            setPointDegC = parseFloat(thermostat.get('setPointDegC')),
+            deadBandDegC = parseFloat(thermostat.get('deadBandDegC'));
+
+        chart.series[0].addPoint([x, parseFloat(thermostat.get('degC'))]);
+        chart.series[1].addPoint([x, setPointDegC]);
+        chart.series[2].addPoint([x, parseFloat(thermostat.get('avgDegC'))]);
+        chart.series[3].addPoint([x, setPointDegC + deadBandDegC]);
+        chart.series[4].addPoint([x, setPointDegC - deadBandDegC]);
       });
     }, 5000);
   },
 
-  series: [{
-    name: 'Sensed temperature'
-  }, {
-    name: 'Commanded temperature'
-  }],
+  series: [{name: 'Sensed'},
+           {name: 'Commanded'},
+           {name: 'Average'},
+           {name: 'UpperLimit'},
+           {name: 'LowerLimit'}],
 
   onDestroy: function() {
     clearInterval(this._pollingInterval);
