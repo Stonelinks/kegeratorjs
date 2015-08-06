@@ -13,6 +13,6 @@ module.exports = {
     },
 
     literToPints: function(L) {
-        return parseFloat(L) / 2.11338;
+        return parseFloat(L) * 2.11338;
     }
 };
