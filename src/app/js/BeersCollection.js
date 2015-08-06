@@ -4,6 +4,6 @@ var BaseCollection = require('./common/BaseCollection');
 var BeerModel = BaseModel.extend();
 
 module.exports = BaseCollection.extend({
-  model: BeerModel,
-  endPoint: 'beers'
+    model: BeerModel,
+    endPoint: 'beers'
 });

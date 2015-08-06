@@ -5,7 +5,7 @@ var _ = require('underscore');
 var KegView = Marionette.ItemView.extend({
     template: require('../tmpl/keg.hbs'),
 
-    templateHelpers: function() {
+    templateHelpers: function () {
         var beer = this.model.get('beer');
         this.model.set('consumedP', parseInt(util.literToPints(this.model.get('consumedL'))))
         this.model.set('capacityP', parseInt(util.literToPints(this.model.get('capacityL'))))

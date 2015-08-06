@@ -4,6 +4,6 @@ var BaseCollection = require('./common/BaseCollection');
 var EventModel = BaseModel.extend();
 
 module.exports = BaseCollection.extend({
-  model: EventModel,
-  endPoint: 'events'
+    model: EventModel,
+    endPoint: 'events'
 });

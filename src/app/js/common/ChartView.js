@@ -1,5 +1,5 @@
 var Marionette = require('backbone.marionette'),
-  Highcharts = require('highcharts-browserify');
+    Highcharts = require('highcharts-browserify');
 
 Highcharts.setOptions({
     global: {
@@ -18,7 +18,7 @@ var LiveChart = Marionette.ItemView.extend({
 
     seriesName: undefined,
 
-    onShow: function(options) {
+    onShow: function (options) {
         var self = this;
 
         this.$el.highcharts({
@@ -27,7 +27,7 @@ var LiveChart = Marionette.ItemView.extend({
                 animation: Highcharts.svg, // don't animate in old IE
                 marginRight: 10,
                 events: {
-                    load: function() {
+                    load: function () {
                         self.getOption('onLoad').call(self, this);
                         self.$el.find('text[text-anchor="end"]:contains(Highcharts)').hide();
                     }
@@ -51,7 +51,7 @@ var LiveChart = Marionette.ItemView.extend({
                 }]
             },
             tooltip: {
-                formatter: function() {
+                formatter: function () {
                     return '<b>' + this.series.name + '</b><br/>' +
                         Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) + '<br/>' +
                         Highcharts.numberFormat(this.y, 2);
@@ -66,20 +66,20 @@ var LiveChart = Marionette.ItemView.extend({
             series: this.getOption('series')
             //series: [{
             //    name: this.getOption('seriesName'),
-                //data: (function() {
-                //    // generate an array of random data
-                //    var data = [],
-                //        time = (new Date()).getTime(),
-                //        i;
-                //
-                //    for (i = -100; i <= 0; i += 1) {
-                //        data.push({
-                //            x: time + i * 1000,
-                //            y: 0.0
-                //        });
-                //    }
-                //    return data;
-                //}())
+            //data: (function() {
+            //    // generate an array of random data
+            //    var data = [],
+            //        time = (new Date()).getTime(),
+            //        i;
+            //
+            //    for (i = -100; i <= 0; i += 1) {
+            //        data.push({
+            //            x: time + i * 1000,
+            //            y: 0.0
+            //        });
+            //    }
+            //    return data;
+            //}())
             //}]
         });
     }
