@@ -6655,6 +6655,12 @@ fieldset[disabled] .btn-hollow.active {
 #nav img {
   max-width: 400px;
 }
+.show-ike {
+  display: none;
+}
+.show-msword {
+  display: block;
+}
 /*
 * Skeleton V1.1
 * Copyright 2011, Dave Gamache
@@ -8403,4 +8409,10 @@ BODY {
 }
 .jumbotron {
   background-color: transparent;
+}
+.show-ike {
+  display: block;
+}
+.show-msword {
+  display: none;
 }

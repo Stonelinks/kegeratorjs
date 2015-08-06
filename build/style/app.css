@@ -6638,3 +6638,9 @@ fieldset[disabled] .btn-hollow.active {
 #nav img {
   max-width: 400px;
 }
+.show-ike {
+  display: none;
+}
+.show-msword {
+  display: block;
+}
