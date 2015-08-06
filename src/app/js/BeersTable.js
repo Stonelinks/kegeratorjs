@@ -4,7 +4,7 @@ var TableView = require('./common/TableView');
 
 var BeersTable = TableView.extend({
 
-  title: 'Beer Database',
+  title: 'Beer List',
 
   modelKeys: ['name', 'style', 'description', 'brewedBy', 'abv'],
 

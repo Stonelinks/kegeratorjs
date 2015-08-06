@@ -14,12 +14,12 @@ var EventLog = require('./EventLog');
 
 module.exports = {
 
-    thermostat: function(viewPort) {
+    realtime: function (viewPort) {
         var thermostat = new ThermostatModel();
 
         thermostat
             .fetch()
-            .then(function() {
+            .then(function () {
 
                 var ThermostatPage = RowView.extend({
                     childViews: [
@@ -35,39 +35,41 @@ module.exports = {
             });
     },
 
-    kegs: function(viewPort) {
+    kegs: function (viewPort) {
         var kegs = new KegsCollection();
         var beers = new BeersCollection();
 
-        kegs
-            .fetch()
-            .then(function() {
-                beers
-                    .fetch()
-                    .then(function() {
+        kegs.fetch().then(function () {
+            beers.fetch().then(function () {
 
-                        var BeerPage = RowView.extend({
-                            childViews: [
-                                KegsTable.extend({
-                                    collection: kegs
-                                }),
-                                BeersTable.extend({
-                                    collection: beers
-                                })
-                            ]
-                        });
+                kegs.forEach(function (keg) {
+                    keg.set('beer', beers.findWhere({
+                        id: keg.get('beerId')
+                    }))
+                })
 
-                        viewPort.show(new BeerPage());
-                    });
+                var BeerPage = RowView.extend({
+                    childViews: [
+                        KegsTable.extend({
+                            collection: kegs
+                        }),
+                        BeersTable.extend({
+                            collection: beers
+                        })
+                    ]
+                });
+
+                viewPort.show(new BeerPage());
             });
+        });
     },
 
-    history: function(viewPort) {
+    history: function (viewPort) {
         var events = new EventsCollection();
 
         events
             .fetch()
-            .then(function() {
+            .then(function () {
                 var EventsPage = RowView.extend({
                     childViews: [
                         EventLog.extend({

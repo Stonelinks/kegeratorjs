@@ -25,7 +25,6 @@ var NavView = Marionette.ItemView.extend({
         'Kegerator',
         'Kegerator',
         'JIRA for beer',
-        'An experimental social presented by Stefan Aprodou',
         '7geese... no wait',
         'Jícama Dícama',
         'Pizza Delivery Network',

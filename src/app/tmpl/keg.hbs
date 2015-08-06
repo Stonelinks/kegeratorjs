@@ -1,0 +1,90 @@
+<div class="col-sm-12">
+    <h2>{{kegName}}: {{beer.name}}
+        <small>{{beer.description}}</small>
+    </h2>
+    <div class="row">
+        <div class="col-sm-6">
+            <h4>Beer info</h4>
+            <table class="table">
+                <tr>
+                    <th>
+                        Style
+                    </th>
+                    <td>
+                        {{beer.style}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        ABV
+                    </th>
+                    <td>
+                        {{beer.abv}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        IBU
+                    </th>
+                    <td>
+                        {{beer.ibu}}
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Brewer
+                    </th>
+                    <td>
+                        {{beer.brewedBy}}
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="col-sm-6">
+            <h4>Capacity</h4>
+
+            <div class="progress">
+                <div class="progress-bar" style="width: {{percentConsumed}}%;">
+                    {{remainingPints}} pints left
+                </div>
+            </div>
+            <table class="table">
+                <tr>
+                    <th>
+                        Current
+                    </th>
+                    <td>
+                        {{keg.consumedL}} liters
+                    </td>
+                    <td>{{keg.consumedP}} pints
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Total
+                    </th>
+                    <td>
+                        {{keg.capacityL}} liters
+                    </td>
+                    <td>
+                        {{keg.capacityP}} pints
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        Remaining
+                    </th>
+                    <td>
+                        {{remainingL}} liters
+                    </td>
+                    <td>{{remainingPints}} pints
+                    </td>
+                </tr>
+            </table>
+
+
+        </div>
+    </div>
+    <!--<hr/>-->
+</div>

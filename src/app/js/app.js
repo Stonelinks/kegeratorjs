@@ -30,9 +30,8 @@ var showView = function(viewWrapperFunc) {
 };
 
 var pages = {
-    dashboard: showView(Pages.thermostat),
-    thermostat: showView(Pages.thermostat),
-    beers: showView(Pages.kegs),
+    realtime: showView(Pages.realtime),
+    kegs: showView(Pages.kegs),
     history: showView(Pages.history)
 };
 pages['*catchall'] = pages.dashboard;
