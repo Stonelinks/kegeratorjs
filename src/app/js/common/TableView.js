@@ -5,18 +5,18 @@ var util = require('util');
 var templateHelpers = function() {
 
   var modelKeys = [];
-  if (Marionette.getOption(this, 'modelKeys')) {
-    modelKeys = Marionette.getOption(this, 'modelKeys');
+  if (this.getOption('modelKeys')) {
+    modelKeys = this.getOption('modelKeys');
   } else if (this.model || (this.collection && this.collection.at(0))) {
     var model = this.model ? this.model : this.collection.at(0);
     modelKeys = model.keys().sort();
     console.log(modelKeys);
   }
 
-  var columnNames = Marionette.getOption(this, 'columnNames');
+  var columnNames = this.getOption('columnNames');
 
   return {
-    title: Marionette.getOption(this, 'title'),
+    title: this.getOption('title'),
     modelKeys: modelKeys,
     columnNames: modelKeys.map(function(key) {
       return columnNames && columnNames[key] ? columnNames[key] : util.camelCaseToRegularForm(key);
@@ -51,8 +51,8 @@ module.exports = Marionette.CompositeView.extend({
 
   childViewOptions: function() {
     return {
-      modelKeys: Marionette.getOption(this, 'modelKeys'),
-      columnNames: Marionette.getOption(this, 'columnNames')
+      modelKeys: this.getOption('modelKeys'),
+      columnNames: this.getOption('columnNames')
     };
   }
 });

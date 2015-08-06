@@ -5,5 +5,5 @@ var BeerModel = BaseModel.extend();
 
 module.exports = BaseCollection.extend({
   model: BeerModel,
-  endPoint: 'beers'
+  endPoint: 'kegs'
 });

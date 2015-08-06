@@ -29,23 +29,11 @@ var showView = function(viewWrapperFunc) {
     }
 };
 
-var createDummyView = function(msg) {
-    var DummyView = Marionette.ItemView.extend({
-        template: function() {
-            console.log(msg);
-            return '<center><h1>' + msg + '</h1></center>';
-        }
-    });
-    return showView(function(viewPort) {
-        viewPort.show(new DummyView());
-    });
-};
-
 var pages = {
     dashboard: showView(Pages.thermostat),
     thermostat: showView(Pages.thermostat),
-    beers: showView(Pages.beers),
-    events: showView(Pages.events)
+    beers: showView(Pages.kegs),
+    history: showView(Pages.history)
 };
 pages['*catchall'] = pages.dashboard;
 

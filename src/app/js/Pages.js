@@ -2,18 +2,18 @@
  * Created by ld on 8/5/15.
  */
 
-var Marionette = require('backbone.marionette');
 var RowView = require('./common/RowView');
 var ThermostatModel = require('./ThermostatModel');
 var ThermostatChart = require('./ThermostatChart');
 var KegsCollection = require('./KegsCollection');
-var KegsTable = require('./KegsTable');
+var KegsTable = require('./KegsView');
 var BeersCollection = require('./BeersCollection');
 var BeersTable = require('./BeersTable');
 var EventsCollection = require('./EventsCollection');
 var EventLog = require('./EventLog');
 
 module.exports = {
+
     thermostat: function(viewPort) {
         var thermostat = new ThermostatModel();
 
@@ -29,11 +29,13 @@ module.exports = {
                     ]
                 });
 
-                viewPort.show(new ThermostatPage());
+                viewPort.show(new ThermostatChart({
+                    model: thermostat
+                }));
             });
     },
 
-    beers: function(viewPort) {
+    kegs: function(viewPort) {
         var kegs = new KegsCollection();
         var beers = new BeersCollection();
 
@@ -59,7 +61,8 @@ module.exports = {
                     });
             });
     },
-    events: function(viewPort) {
+
+    history: function(viewPort) {
         var events = new EventsCollection();
 
         events

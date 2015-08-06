@@ -28,13 +28,13 @@ var LiveChart = Marionette.ItemView.extend({
                 marginRight: 10,
                 events: {
                     load: function() {
-                        Marionette.getOption(self, 'onLoad').call(self, this);
+                        self.getOption('onLoad').call(self, this);
                         self.$el.find('text[text-anchor="end"]:contains(Highcharts)').hide();
                     }
                 }
             },
             title: {
-                text: Marionette.getOption(this, 'title')
+                text: this.getOption('title')
             },
             xAxis: {
                 type: 'datetime',
@@ -42,7 +42,7 @@ var LiveChart = Marionette.ItemView.extend({
             },
             yAxis: {
                 title: {
-                    text: Marionette.getOption(this, 'yAxisTitle')
+                    text: this.getOption('yAxisTitle')
                 },
                 plotLines: [{
                     value: 0,
@@ -63,9 +63,9 @@ var LiveChart = Marionette.ItemView.extend({
             exporting: {
                 enabled: false
             },
-            series: Marionette.getOption(this, 'series')
+            series: this.getOption('series')
             //series: [{
-            //    name: Marionette.getOption(this, 'seriesName'),
+            //    name: this.getOption('seriesName'),
                 //data: (function() {
                 //    // generate an array of random data
                 //    var data = [],
