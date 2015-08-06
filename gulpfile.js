@@ -18,7 +18,7 @@ var path = {
   js: './src/app/js/**/*.js',
   images: './src/app/images/**/*.*',
   server: './src/server/**.js',
-  index: './src/app/index.hbs'
+  index: './src/app/*.hbs'
 };
 
 gulp.task('js', function() {
