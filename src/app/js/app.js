@@ -3,65 +3,66 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
-var LiveCharts = require('./views/liveChart');
+var Pages = require('./Pages')
 require('bootstrap');
 
 var app = new Marionette.Application();
 window.app = app;
 
 app.addRegions({
-  nav: '#nav',
-  content: '#content'
+    nav: '#nav',
+    content: '#content'
 });
 
 // set up nav
-var Nav = require('./nav');
+var Nav = require('./NavView');
 var nav = new Nav();
-app.addInitializer(function(opts) {
-  app.getRegion('nav').show(nav);
-  nav.selectActiveButton();
+app.addInitializer(function (opts) {
+    app.getRegion('nav').show(nav);
+    nav.selectActiveButton();
 });
 
 // main pages
-var showView = function(viewWrapperFunc) {
-  return function() {
-    var viewPort = app.getRegion('content');
-    viewWrapperFunc(viewPort);
-  }
+var showView = function (viewWrapperFunc) {
+    return function () {
+        var viewPort = app.getRegion('content');
+        viewWrapperFunc(viewPort);
+    }
 };
 
-var createDummyView = function(msg) {
-  var DummyView = Marionette.ItemView.extend({
-    template: function() {
-      console.log(msg);
-      return '<center><h1>' + msg + '</h1></center>';
-    }
-  });
-  return showView(function(viewPort) {
-    viewPort.show(new DummyView());
-  });
+var createDummyView = function (msg) {
+    var DummyView = Marionette.ItemView.extend({
+        template: function () {
+            console.log(msg);
+            return '<center><h1>' + msg + '</h1></center>';
+        }
+    });
+    return showView(function (viewPort) {
+        viewPort.show(new DummyView());
+    });
 };
 
 var pages = {
-  dashboard: showView(require('./thermostat')),
-  beers: showView(require('./beers')),
-  events: showView(require('./events'))
-};
+    dashboard: showView(Pages.thermostat),
+    thermostat: showView(Pages.thermostat),
+    beers: showView(Pages.beers),
+    events: showView(Pages.events)
+}
 pages['*catchall'] = pages.dashboard;
 
 var Router = Marionette.AppRouter.extend({
-  routes: pages
+    routes: pages
 });
 
 // start the router
-app.addInitializer(function(opts) {
-  this.router = new Router();
-  this.router.on('route', function() {
-    nav.selectActiveButton();
-  });
-  Backbone.history.start({
-    // pushState: true
-  });
+app.addInitializer(function (opts) {
+    this.router = new Router();
+    this.router.on('route', function () {
+        nav.selectActiveButton();
+    });
+    Backbone.history.start({
+        // pushState: true
+    });
 });
 
 app.start();

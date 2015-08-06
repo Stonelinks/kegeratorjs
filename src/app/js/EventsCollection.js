@@ -1,5 +1,5 @@
-var BaseModel = require('../BaseModel');
-var BaseCollection = require('../BaseCollection');
+var BaseModel = require('./common/BaseModel');
+var BaseCollection = require('./common/BaseCollection');
 
 var EventModel = BaseModel.extend();
 

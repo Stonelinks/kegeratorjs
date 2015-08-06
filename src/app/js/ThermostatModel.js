@@ -1,4 +1,4 @@
-var BaseModel = require('../BaseModel');
+var BaseModel = require('./common/BaseModel');
 
 var ThermostatModel = BaseModel.extend({
   endPoint: 'thermostat',

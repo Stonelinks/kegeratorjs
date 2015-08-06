@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var TableView = require('../views/table');
+var TableView = require('./common/TableView');
 
 var BeersTable = TableView.extend({
 

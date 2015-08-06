@@ -1,10 +1,10 @@
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 
-var util = require('../util');
+var util = require('./util');
 
 var EventItem = Marionette.ItemView.extend({
-  template: require('../../tmpl/eventitem.hbs'),
+  template: require('../tmpl/eventitem.hbs'),
 
   templateHelpers: function() {
     var time = moment(this.model.get('time') * 1000);

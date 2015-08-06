@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var LiveChart = require('../views/liveChart');
+var LiveChart = require('./common/LiveChartView');
 
 var ThermostatChart = LiveChart.extend({
   title: 'Temperature',

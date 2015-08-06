@@ -8,7 +8,7 @@ var chooseRandom = function(list) {
 var NavView = Marionette.ItemView.extend({
   template: require('../tmpl/nav.hbs'),
 
-  serializeData: function() {
+  templateHelpers: function() {
     return {
       logoFileName: chooseRandom([
         'airware_logo.png',
