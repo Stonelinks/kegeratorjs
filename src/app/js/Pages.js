@@ -14,12 +14,12 @@ var EventsCollection = require('./EventsCollection');
 var EventLog = require('./EventLog');
 
 module.exports = {
-    thermostat: function (viewPort) {
+    thermostat: function(viewPort) {
         var thermostat = new ThermostatModel();
 
         thermostat
             .fetch()
-            .then(function () {
+            .then(function() {
 
                 var ThermostatPage = RowView.extend({
                     childViews: [
@@ -33,16 +33,16 @@ module.exports = {
             });
     },
 
-    beers: function (viewPort) {
+    beers: function(viewPort) {
         var kegs = new KegsCollection();
         var beers = new BeersCollection();
 
         kegs
             .fetch()
-            .then(function () {
+            .then(function() {
                 beers
                     .fetch()
-                    .then(function () {
+                    .then(function() {
 
                         var BeerPage = RowView.extend({
                             childViews: [
@@ -59,12 +59,12 @@ module.exports = {
                     });
             });
     },
-    events: function (viewPort) {
+    events: function(viewPort) {
         var events = new EventsCollection();
 
         events
             .fetch()
-            .then(function () {
+            .then(function() {
                 var EventsPage = RowView.extend({
                     childViews: [
                         EventLog.extend({

@@ -3,7 +3,7 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
-var Pages = require('./Pages')
+var Pages = require('./Pages');
 require('bootstrap');
 
 var app = new Marionette.Application();
@@ -17,27 +17,26 @@ app.addRegions({
 // set up nav
 var Nav = require('./NavView');
 var nav = new Nav();
-app.addInitializer(function (opts) {
+app.addInitializer(function() {
     app.getRegion('nav').show(nav);
-    nav.selectActiveButton();
 });
 
 // main pages
-var showView = function (viewWrapperFunc) {
-    return function () {
+var showView = function(viewWrapperFunc) {
+    return function() {
         var viewPort = app.getRegion('content');
         viewWrapperFunc(viewPort);
     }
 };
 
-var createDummyView = function (msg) {
+var createDummyView = function(msg) {
     var DummyView = Marionette.ItemView.extend({
-        template: function () {
+        template: function() {
             console.log(msg);
             return '<center><h1>' + msg + '</h1></center>';
         }
     });
-    return showView(function (viewPort) {
+    return showView(function(viewPort) {
         viewPort.show(new DummyView());
     });
 };
@@ -47,7 +46,7 @@ var pages = {
     thermostat: showView(Pages.thermostat),
     beers: showView(Pages.beers),
     events: showView(Pages.events)
-}
+};
 pages['*catchall'] = pages.dashboard;
 
 var Router = Marionette.AppRouter.extend({
@@ -55,10 +54,10 @@ var Router = Marionette.AppRouter.extend({
 });
 
 // start the router
-app.addInitializer(function (opts) {
+app.addInitializer(function(opts) {
     this.router = new Router();
-    this.router.on('route', function () {
-        nav.selectActiveButton();
+    this.router.on('route', function() {
+        nav.render();
     });
     Backbone.history.start({
         // pushState: true

@@ -25,14 +25,19 @@ var NavView = Marionette.ItemView.extend({
         'Kegerator',
         'Kegerator',
         'JIRA for beer',
+        'An experimental social presented by Stefan Aprodou',
         '7geese... no wait',
+        'Jícama Dícama',
         'Pizza Delivery Network',
+        'Welcome to thunderdome',
+        '生ビールください (^・ω・^ )',
+        '( ͡° ͜ʖ ͡°) ( ͡° ͜ʖ ͡°) ( ͡° ͜ʖ ͡°)',
         'Payroll System'
       ])
     };
   },
 
-  selectActiveButton: function() {
+  onRender: function() {
     var activeClass = 'btn-primary';
     var inactiveClass = 'btn-default';
     var navButtons = '.kegerator-nav a';
@@ -46,6 +51,12 @@ var NavView = Marionette.ItemView.extend({
     }
     this.$el.find(activeButton).addClass(activeClass);
     this.$el.find(navButtons).not(activeButton).addClass(inactiveClass);
+  },
+
+  initialize: function() {
+    setInterval(function() {
+      this.render();
+    }.bind(this), 60 * 1000);
   }
 });
 
