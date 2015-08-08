@@ -11,7 +11,7 @@ host_addr = 'http://localhost:5000/api/v1'
 class TestApi(unittest.TestCase):
     def setUp(self):
         self.apiProc = subprocess.Popen('./src/server/main.py')
-        time.sleep(1)
+        time.sleep(2)
 
     def tearDown(self):
         self.apiProc.terminate()
