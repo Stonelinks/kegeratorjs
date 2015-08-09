@@ -11,7 +11,7 @@
 
 user=""
 dir="/home/pi/"
-cmd="/usr/bin/python2 /home/pi/kegeratorjs/src/server/main.py"
+cmd="/usr/bin/python /home/pi/kegeratorjs/src/server/main.py"
 
 name=`basename $0`
 pid_file="/var/run/$name.pid"

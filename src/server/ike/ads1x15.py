@@ -16,6 +16,8 @@ class ADS1x15Manager(threading.Thread):
         self._adc = Adafruit_ADS1x15.ADS1x15(ic=1) #using the ADS1115
         self._stop_evt = threading.Event()
         self._api_lock = threading.Lock()
+        for c in self._channels:
+            self._channel_data[c.id] = 0
 
     def read(self, channel):
         with self._api_lock:
@@ -25,10 +27,10 @@ class ADS1x15Manager(threading.Thread):
         while not self._stop_evt.isSet():
             for c in self._channels:
                 with self._api_lock:
-                    self._channel_data[c.id] = (self._adc.readADCSingleEnded(channel=c.id, pga=c.gain, sps=c.sps))
+                    self._channel_data[c.id] = (self._adc.readADCSingleEnded(channel=c.id, pga=c.gain, sps=c.sps))/1000.0
             time.sleep(self._poll_interval)
         self._stop_evt.clear()
 
-def stop(self):
-        self._stop_evt.set()
-        super(ADS1x15Manager, self).stop()
+    def stop(self):
+            self._stop_evt.set()
+            super(ADS1x15Manager, self).stop()
