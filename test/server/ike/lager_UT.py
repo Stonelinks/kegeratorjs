@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
+from __future__ import absolute_import, division, print_function
 import unittest
 import ike.lager as lager
 import os
@@ -43,8 +44,11 @@ class TestLager(unittest.TestCase):
         time.sleep(1.0)
         matches = log.find_events(lager.Event.pouredBeer, time.time()-1, time.time())
         self.assertEqual(len(matches), 0)
+        matches = log.find_events("", None)
+        self.assertEqual(len(matches), 5)
 
-    def test_circular_db(self):
+
+def test_circular_db(self):
         try:
             os.remove(self.db_file)
         except:

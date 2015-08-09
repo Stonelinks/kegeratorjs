@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 __author__ = 'nwiles'
 import tinydb
 import tinydb.middlewares
@@ -73,8 +74,8 @@ class Lager:
                 log_it=True;
             if log_it:
                 self.latestData.update({type: this_entry})
-            table = self.event_db.table(str(type), max_size=Lager.MAX_TABLE_SIZE)
-            table.insert(this_entry)
+                table = self.event_db.table(str(type), max_size=Lager.MAX_TABLE_SIZE)
+                table.insert(this_entry)
 
     def find_events(self, type_filter, start_time, end_time=None):
         with self._api_lock:
@@ -97,7 +98,7 @@ class Lager:
                 #search log history
                 filters = []
                 tables = []
-                if type_filter is not None:
+                if len(type_filter) != 0:
                     for t in type_filter:
                         if t in self.event_db.tables():
                             tables.append(t)

@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
+from __future__ import absolute_import, division, print_function
 __author__ = 'ldoyle'
 import socket
 import os.path

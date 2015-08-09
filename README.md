@@ -190,3 +190,25 @@ A web enabled kegerator powered by a Javascript front end and Python (Flask) bac
 	  - types [ comma separated list of event types ]
 	  - startDate (if 'now' then just return the last one that matches)
 	  - endDate (optional)
+
+##Rasbery Pi Setup##
+This section is incomplete, but describes steps taken hardware up and running
+###ADC Setup (ADS1x15)
+This comes mostly from [here](http://www.raspberry-projects.com/pi/pi-operating-systems/raspbian/io-pins-raspbian/i2c-pins)
+
+Edit the modules file
+
+```sudo nano /etc/modules```
+
+Add these lines:
+
+```
+i2c-bcm2708
+i2c-dev
+```
+
+```sudo apt-get install python-smbus i2c-tools```
+
+
+##Legal##
+This project utilizes Adafruit_I2C.py and Adafruit_ADS1x15.py Copyright (c) 2012-2013 Limor Fried, Kevin Townsend and Mikey Sklar for Adafruit Industries. All rights reserved.

@@ -1,8 +1,10 @@
-#!/usr/bin/env python3
-__author__ = 'nwiles'
+#!/usr/bin/env python2
+from __future__ import absolute_import, division, print_function
 import api.api as api
 import socket
 import sys
+__author__ = 'nwiles'
+
 mock = socket.gethostname() != 'ike'
 if mock:
     import ike.ikeStub as ike

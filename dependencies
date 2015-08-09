@@ -1,7 +1,6 @@
 #!/bin/bash
-pip3 install -r requirements.txt
-HOSTNAME = $(hostname)
+pip2 install -r requirements.txt
 if [ "$HOSTNAME" == "ike" ]; then
-    pip3 install -r requirementsHw.txt
+    pip2 install -r requirementsHw.txt
 fi
 npm install
