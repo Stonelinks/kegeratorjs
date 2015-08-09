@@ -142,7 +142,7 @@ class ADS1x15:
     # Make sure the IC specified is valid
     if ((ic < self.__IC_ADS1015) | (ic > self.__IC_ADS1115)):
       if (self.debug):
-        print "ADS1x15: Invalid IC specfied: %h" % ic
+        print "ADS1x15: Invalid IC specfied: %dh" % ic
       return -1
     else:
       self.ic = ic
