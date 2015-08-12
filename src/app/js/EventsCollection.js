@@ -5,5 +5,6 @@ var EventModel = BaseModel.extend();
 
 module.exports = BaseCollection.extend({
     model: EventModel,
-    endPoint: 'events'
+    endPoint: 'events',
+    comparator: 'time'
 });
