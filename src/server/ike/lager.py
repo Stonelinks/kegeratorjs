@@ -61,6 +61,9 @@ class Lager:
         self._downsample_policy = {}
         self._downsample_policy[Event.thermostatSense] = temp_sense_is_note_worthy
     def __del__(self):
+        #we must close all open tables as well
+        for t in self.event_db.tables():
+            self.event_db.table(t).close()
         self.event_db.close()
 
     def log_event(self, type, data):
