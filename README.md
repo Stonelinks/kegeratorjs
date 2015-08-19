@@ -1,7 +1,7 @@
 #kegeratorjs#
 [![Build Status](https://travis-ci.org/Stonelinks/kegeratorjs.svg?branch=master)](https://travis-ci.org/Stonelinks/kegeratorjs)
 
-A web enabled kegerator powered by a Javascript front end and Python (Flask) backend kegerator
+A web enabled kegerator powered by a Javascript front end and Python (Flask) backend
 
 ##Getting Started##
   - Customize info about your remot host using the ```environment``` file
