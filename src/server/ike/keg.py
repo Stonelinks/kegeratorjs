@@ -104,6 +104,8 @@ class Keg():
             #flow
             flow_meter_now = self._get_flow_liters()
             delta_flow = flow_meter_now - self._flow_meter_last
+            #don't want to go negative
+            delta_flow = min(self._capacity_l-self._consumed_l, delta_flow)
             self._flow_meter_last = flow_meter_now
 
             #flow rate
@@ -123,6 +125,10 @@ class Keg():
                 if self._has_pour_stopped(time_now):
                     self._on_stop_pour(time_now)
                     self._is_pouring = False
+
+            if delta_flow!=0 and self._capacity_l == self._consumed_l:
+                self._lager.log_event(lager.Event.finishedKeg, {'kegId': self._id,
+                                                                'beerId': self._beer_id})
 
     def _has_pour_stopped(self, time_now):
         return ((time_now - self._time_last_pouring) >= self._pour_timeout_s)

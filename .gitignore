@@ -18,3 +18,4 @@ emacs.xml
 *.coverage
 *.log
 *.egg*
+env

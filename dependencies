@@ -1,6 +1,6 @@
 #!/bin/bash
-pip2 install -r requirements.txt
+pip install -r requirements.txt
 if [ "$HOSTNAME" == "ike" ]; then
-    pip2 install -r requirementsHw.txt
+    pip install -r requirementsHw.txt
 fi
 npm install
