@@ -17,9 +17,9 @@ class CircularTable(tinydb.database.Table):
     The query cache gets updated on insert/update/remove. Useful when in cases
     where many searches are done but data isn't changed often.
     """
-    def __init__(self, name, db, max_size):
+    def __init__(self, name, db, **options):
         super(CircularTable, self).__init__(name, db)
-        self._max_size = max_size
+        self._max_size = options['max_size']
 
     def insert(self, element):
         """
@@ -119,7 +119,7 @@ class Lager:
                     query = f & query
             results = []
             for t in tables:
-                table = self.event_db.table(t)
+                table = self.event_db.table(t, max_size=Lager.MAX_TABLE_SIZE)
                 if query:
                     results += (table.search(query))
                 else:
