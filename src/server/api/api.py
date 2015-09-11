@@ -210,6 +210,12 @@ class EventApi(flask.views.MethodView):
             e.update({'id':e.eid})
         return flask.jsonify({'data': events})
 
+class CarbonationApi(flask.views.MethodView):
+    def get(self):
+        return flask.jsonify({'kegPressure_PA': ike_instance._kegPressure,
+                              'tankPressure_PA': ike_instance._tankPressure,
+                              'dissolvedVolumesCo2': ike_instance._carbonationVolumes()})
+
 def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)
     app.add_url_rule(url, defaults={pk: None},
@@ -233,7 +239,7 @@ def launch(_ike_instance):
     # users
     register_api(app, UserApi, 'users', api_url_prefix + '/users/', pk='id')
 
-    # keg
+    # kegs
     view_func = KegApi.as_view('kegs')
     app.add_url_rule(api_url_prefix + '/kegs/', defaults={'id': None}, view_func=view_func, methods=['GET',])
     app.add_url_rule(api_url_prefix + '%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
@@ -241,9 +247,12 @@ def launch(_ike_instance):
     # sensors
     app.add_url_rule(api_url_prefix + '/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
     app.add_url_rule(api_url_prefix + '/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET', 'PUT'])
-    
-    # kegerator "core" (whateverthefuck that means)
+    app.add_url_rule(api_url_prefix + '/carbonation/', view_func=CarbonationApi.as_view('carbonation'), methods=['GET'])
+
+    # kegerator settings
     app.add_url_rule(api_url_prefix + '/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
+
+    # logs
     app.add_url_rule(api_url_prefix + '/events/', view_func=EventApi.as_view('events'), methods=['GET'])
     
     # serve the frontend
