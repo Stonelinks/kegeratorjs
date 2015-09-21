@@ -26,8 +26,8 @@ class ADS1x15Manager(threading.Thread):
     def run(self):
         while not self._stop_evt.isSet():
             with self._api_lock:
-            for c in self._channels:
-                self._channel_data[c.id] = (self._adc.readADCSingleEnded(channel=c.id, pga=c.gain, sps=c.sps))/1000.0
+                for c in self._channels:
+                    self._channel_data[c.id] = (self._adc.readADCSingleEnded(channel=c.id, pga=c.gain, sps=c.sps))/1000.0
             time.sleep(self._poll_interval)
         self._stop_evt.clear()
 

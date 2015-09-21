@@ -15,7 +15,8 @@ class Getter():
 class TestAnalogSensor(unittest.TestCase):
     def test_analog_sensor(self):
         getter = Getter(0)
-        uut = analogSensor.AnalogSensor(getter, {0:2, 10:200})
+        uut = analogSensor.AnalogSensor(getter, [(0, 2),
+                                                 (10,200)])
         self.assertEqual(uut.read(), 2)
         getter.data = 10
         self.assertEqual(uut.read(), 200)

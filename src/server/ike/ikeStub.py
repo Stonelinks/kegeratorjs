@@ -26,3 +26,7 @@ class Ike:
         flow_stubs.append(FlowStub())
         self._kegManager = keg.KegManager(flow_meters=flow_stubs)
         self._thermostat = thermostat.Thermostat(temp_input, set_relay, False, self._logger, thermostatsense=ThermostatSenseStub)
+
+        self._kegPressure = lambda: 70000.0
+        self._tankPressure = lambda: 6000000.0
+        self._carbonationVolumes = lambda: 3.0

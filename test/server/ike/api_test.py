@@ -209,6 +209,13 @@ class TestApi(unittest.TestCase):
         status = self.delete(host_addr+'/thermostat/')
         self.assertEqual(status, 405)
 
+    def test_thermostat(self):
+        #get should return known values:
+        reply, status = self.get(host_addr + '/carbonation/')
+        self.assertEqual(status, 200)
+        self.assertEqual(reply['kegPressure_PA'], 70000.0)
+        self.assertEqual(reply['tankPressure_PA'], 6000000.0)
+        self.assertEqual(reply['dissolvedVolumesCo2'], 3.0)
 
 if __name__ == '__main__':
     unittest.main()

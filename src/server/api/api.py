@@ -212,9 +212,9 @@ class EventApi(flask.views.MethodView):
 
 class CarbonationApi(flask.views.MethodView):
     def get(self):
-        return flask.jsonify({'kegPressure_PA': ike_instance._kegPressure,
-                              'tankPressure_PA': ike_instance._tankPressure,
-                              'dissolvedVolumesCo2': ike_instance._carbonationVolumes()})
+        return flask.jsonify({u'kegPressure_PA': ike_instance._kegPressure(),
+                              u'tankPressure_PA': ike_instance._tankPressure(),
+                              u'dissolvedVolumesCo2': ike_instance._carbonationVolumes()})
 
 def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)

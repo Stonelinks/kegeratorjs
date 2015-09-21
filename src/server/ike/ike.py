@@ -6,12 +6,12 @@ import ike.keg as keg
 import ike.lager as lager
 import ike.measurementSpecialties as ms
 import ike.ads1x15 as ads1x15
+import ike.carbonation as carbonation
 import RPIO
 import w1thermsensor
 import semantic_version as sv
 import os.path
 import config
-import math
 
 class Ike:
     def __init__(self):
@@ -33,7 +33,7 @@ class Ike:
         self._adcManager.start()
         self._kegPressure = ms.M7139_200PG(lambda: self._adcManager.read(0))
         self._tankPressure = ms.M7139_03KPN(lambda: self._adcManager.read(1))
-        self._carbonationVolumes = lambda: carbonation(self.tempSensor.get_temperature(), self._kegPressure.read())
+        self._carbonationVolumes = lambda: carbonation.volumes(self.tempSensor.get_temperature(), self._kegPressure.read())
         RPIO.wait_for_interrupts(threaded=True)
 
     def __del__(self):
@@ -49,6 +49,3 @@ class Ike:
 
     def __str__(self):
         pass
-
-    def carbonation(temp_C, pressure_PA):
-        return (pressure_PA*0.000145037738 + 14.695)*(0.0181 + 0.090115*math.exp( (32-(temp_C*9/5.0+32))/43.11) ) - 0.00334
