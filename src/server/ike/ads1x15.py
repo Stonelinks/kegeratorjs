@@ -21,7 +21,11 @@ class ADS1x15Manager(threading.Thread):
 
     def read(self, channel):
         with self._api_lock:
-            return self._channel_data[channel]
+            return self._channel_data[channel];
+
+    def read_all(self):
+        with self._api_lock:
+            return self._channel_data
 
     def run(self):
         while not self._stop_evt.isSet():

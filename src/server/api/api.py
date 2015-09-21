@@ -193,12 +193,6 @@ class KegeratorSettingsApi(flask.views.MethodView):
         else:
             raise werkzeug.exceptions.BadRequest(form.errors)
 
-class SensorsApi(flask.views.MethodView):
-    def get(self):
-        # return kegerator sensor data
-        latest_sensors = ike_instance._logger.find_events(ike.lager.Event.sensors, 'now')
-        return flask.jsonify(latest_sensors)
-
 class EventApi(flask.views.MethodView):
     def get(self):
         types = flask.request.args.get('types')
@@ -215,6 +209,15 @@ class CarbonationApi(flask.views.MethodView):
         return flask.jsonify({u'kegPressure_PA': ike_instance._kegPressure(),
                               u'tankPressure_PA': ike_instance._tankPressure(),
                               u'dissolvedVolumesCo2': ike_instance._carbonationVolumes()})
+
+class AdcApi(flask.views.MethodView):
+    def get(self):
+        return flask.jsonify({u'channels': ike_instance._adcManager.read_all()})
+
+class FlowApi(flask.views.MethodView):
+    def get(self):
+        return flask.jsonify({u'data': [m.get_flow_liters() for m in ike_instance._flowMeters]})
+
 
 def register_api(app, view, endpoint, url, pk='id', pk_type='int'):
     view_func = view.as_view(endpoint)
@@ -245,9 +248,10 @@ def launch(_ike_instance):
     app.add_url_rule(api_url_prefix + '%s<%s:%s>' % ('/kegs/', 'int', 'id'), view_func=view_func, methods=['GET', 'PUT'])
     
     # sensors
-    app.add_url_rule(api_url_prefix + '/sensors/', view_func=SensorsApi.as_view('sensors'), methods=['GET'])
     app.add_url_rule(api_url_prefix + '/thermostat/', view_func=ThermostatApi.as_view('thermostat'), methods=['GET', 'PUT'])
     app.add_url_rule(api_url_prefix + '/carbonation/', view_func=CarbonationApi.as_view('carbonation'), methods=['GET'])
+    app.add_url_rule(api_url_prefix + '/adc/', view_func=AdcApi.as_view('adc'), methods=['GET'])
+    app.add_url_rule(api_url_prefix + '/flow/', view_func=FlowApi.as_view('flow'), methods=['GET'])
 
     # kegerator settings
     app.add_url_rule(api_url_prefix + '/kegerator/', view_func=KegeratorSettingsApi.as_view('kegerator'), methods=['GET','PUT'])
