@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 
-var HighChart = require('./common/ChartView');
+var HighChart = require('./ChartView');
 
 var ThermostatRealtimeChart = HighChart.extend({
     title: 'Temperature',

@@ -3,7 +3,8 @@ var _ = require('underscore');
 var Backbone = require('backbone');
 Backbone.$ = window.$ = window.jQuery = $;
 var Marionette = require('backbone.marionette');
-var Pages = require('./Pages');
+var Pages = require('./views/Pages');
+var Nav = require('./views/NavView');
 require('bootstrap');
 
 var app = new Marionette.Application();
@@ -15,15 +16,14 @@ app.addRegions({
 });
 
 // set up nav
-var Nav = require('./NavView');
 var nav = new Nav();
-app.addInitializer(function() {
+app.addInitializer(function () {
     app.getRegion('nav').show(nav);
 });
 
 // main pages
-var showView = function(viewWrapperFunc) {
-    return function() {
+var showView = function (viewWrapperFunc) {
+    return function () {
         var viewPort = app.getRegion('content');
         viewWrapperFunc(viewPort);
     }
@@ -41,9 +41,9 @@ var Router = Marionette.AppRouter.extend({
 });
 
 // start the router
-app.addInitializer(function(opts) {
+app.addInitializer(function (opts) {
     this.router = new Router();
-    this.router.on('route', function() {
+    this.router.on('route', function () {
         nav.render();
     });
     Backbone.history.start({

@@ -1,6 +1,6 @@
 var Marionette = require('backbone.marionette');
 var _ = require('underscore');
-var util = require('util');
+var util = require('../util');
 
 var templateHelpers = function() {
 

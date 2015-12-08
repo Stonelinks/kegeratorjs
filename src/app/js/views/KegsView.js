@@ -1,9 +1,9 @@
 var Marionette = require('backbone.marionette');
-var util = require('./util');
+var util = require('../util');
 var _ = require('underscore');
 
 var KegView = Marionette.ItemView.extend({
-    template: require('../tmpl/keg.hbs'),
+    template: require('../../tmpl/keg.hbs'),
 
     templateHelpers: function() {
         var beer = this.model.get('beer');

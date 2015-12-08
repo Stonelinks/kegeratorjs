@@ -1,8 +1,8 @@
 var Marionette = require('backbone.marionette');
 
-var TableView = require('./common/TableView');
+var TableView = require('./TableView');
 
-var BeersTable = TableView.extend({
+var BeerTable = TableView.extend({
 
     title: 'Beer List',
 
@@ -17,4 +17,4 @@ var BeersTable = TableView.extend({
     }
 });
 
-module.exports = BeersTable;
+module.exports = BeerTable;

@@ -4,7 +4,7 @@
 var Marionette = require('backbone.marionette');
 var moment = require('moment');
 var _ = require('underscore');
-var HighChart = require('./common/ChartView');
+var HighChart = require('./ChartView');
 
 var PourEventChart = HighChart.extend({
     title: 'Pour History',

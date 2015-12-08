@@ -2,16 +2,16 @@
  * Created by ld on 8/5/15.
  */
 
-var RowView = require('./common/RowView');
-var ThermostatModel = require('./ThermostatModel');
+var RowView = require('./RowView');
+var ThermostatModel = require('../models/Thermostat').Model;
 var ThermostatRealtimeChart = require('./ThermostatRealtimeChart');
 var ThermostatEventChart = require('./ThermostatEventChart');
 var PourEventChart = require('./PourEventChart');
-var KegsCollection = require('./KegsCollection');
+var KegsCollection = require('../models/Keg').Collection;
 var KegsTable = require('./KegsView');
-var BeersCollection = require('./BeersCollection');
-var BeersTable = require('./BeersTable');
-var EventsCollection = require('./EventsCollection');
+var BeersCollection = require('../models/Beer').Collection;
+var BeersTable = require('./BeerTable');
+var EventsCollection = require('../models/Event').Collection;
 var EventLog = require('./EventLog');
 
 module.exports = {
