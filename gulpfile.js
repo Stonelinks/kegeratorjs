@@ -6,7 +6,6 @@ var gulp = require('gulp'),
   clean = require('gulp-clean'),
   browserify = require('browserify'),
   handlebars = require('handlebars'),
-  uglify = require('gulp-uglify'),
   sourcemaps = require('gulp-sourcemaps'),
   less = require('gulp-less'),
   buffer = require('vinyl-buffer'),
@@ -30,10 +29,9 @@ gulp.task('js', function() {
   var bundle = function() {
     return bundler
       .bundle()
-      .pipe(source(package.name + '.' + package.version + '.min.js'))
+      .pipe(source(package.name + '.' + package.version + '.js'))
       .pipe(buffer())
       .pipe(sourcemaps.init({loadMaps: true}))
-      //.pipe(uglify())
       .pipe(sourcemaps.write('./'))
       .pipe(gulp.dest('./build/js/'));
   };
