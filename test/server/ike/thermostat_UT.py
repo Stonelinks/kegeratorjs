@@ -39,6 +39,12 @@ class TestThermostat(unittest.TestCase):
         current_temp.value = inputs.set_point_deg_c+inputs.dead_band_deg_c+0.1
         uut.loop()
         self.assertEqual(relay.is_on, True)
+        uut.enable(False)
+        uut.loop()
+        self.assertEqual(relay.is_on, False)
+        uut.enable(True)
+        uut.loop()
+        self.assertEqual(relay.is_on, True)
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,6 +13,7 @@ import semantic_version as sv
 import os.path
 import config
 
+'https://login.ohmconnect.com/verify-ohm-hour/nyEaPmy9'
 class Ike:
     def __init__(self):
         self.version=sv.Version('0.0.1')
@@ -34,9 +35,16 @@ class Ike:
         self._kegPressure = ms.M7139_200PG(lambda: self._adcManager.read(0))
         self._tankPressure = ms.M7139_03KPN(lambda: self._adcManager.read(1))
         self._carbonationVolumes = lambda: carbonation.volumes(self.tempSensor.get_temperature(), self._kegPressure.read())
+        self._ohmConnect = ohmConnect.OhmConnect(url=ohm_connect_url,
+                                                 callback=lambda active: self._thermostat.enable(not active),
+                                                 poll_interval=60)
+        self._ohmConnect.start()
         RPIO.wait_for_interrupts(threaded=True)
 
     def __del__(self):
+            self._ohmConnect.stop()
+            self._ohmConnect.join()
+
             self._adcManager.stop()
             self._adcManager.join()
 

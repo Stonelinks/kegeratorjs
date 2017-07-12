@@ -59,6 +59,7 @@ class Thermostat(threading.Thread):
         self._sense = thermostatsense(0, 0)
         self._avg_deg_c = runningMean.RunningMean(1000)
         self._relay = relay
+        self._enabled=True
         self._outputSetting=False
         self._state_lock = threading.Lock()
         self._stop_event = threading.Event()
@@ -78,7 +79,9 @@ class Thermostat(threading.Thread):
                 self._avg_deg_c.add_val(new_reading_deg_c)
                 self._sense.avg_deg_c = self._avg_deg_c.get_avg()
                 #run logic:
-                if self._sense.deg_c > inputs.set_point_deg_c+inputs.dead_band_deg_c:
+                if not self._enabled:
+                    self._outputSetting = False
+                elif self._sense.deg_c > inputs.set_point_deg_c+inputs.dead_band_deg_c:
                     # too warm
                     self._outputSetting = not inputs.on_adds_heat
                 elif self._sense.deg_c < inputs.set_point_deg_c-inputs.dead_band_deg_c:
@@ -95,12 +98,17 @@ class Thermostat(threading.Thread):
             ret = self._db.get(eid=1)
             ret.update(self._sense.to_json())
             ret.update({'compressorOn':self._outputSetting})
+            ret.update({'enabled':self._enabled})
             return ret
 
     def set_state(self, value):
         with self._state_lock:
             self._db.update(value, eids=[1])
             self._logger.log_event(lager.Event.thermostatSettings, self._db.get(eid=1))
+
+    def enable(self, flag):
+        with self._state_lock:
+            self._enabled = flag
 
     def __str__(self):
         with self._state_lock:
