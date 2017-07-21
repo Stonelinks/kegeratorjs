@@ -7,13 +7,15 @@ import ike.lager as lager
 import ike.measurementSpecialties as ms
 import ike.ads1x15 as ads1x15
 import ike.carbonation as carbonation
+import ike.ohmConnect as ohmConnect
 import RPIO
 import w1thermsensor
 import semantic_version as sv
 import os.path
 import config
 
-'https://login.ohmconnect.com/verify-ohm-hour/nyEaPmy9'
+ohm_connect_url= 'https://login.ohmconnect.com/verify-ohm-hour/nyEaPmy9'
+
 class Ike:
     def __init__(self):
         self.version=sv.Version('0.0.1')
